@@ -1,0 +1,476 @@
+---
+import { Icon } from 'astro-icon/components';
+import DonationBanner from '~/components/widgets/DonationBanner.astro';
+import PageLayout from '~/layouts/PageLayout.astro';
+
+const membershipUrl = 'https://opencollective.com/mage-os/contribute/community-member-44722/checkout';
+
+const metadata = {
+  title: 'Support campaign options',
+  description: 'Interactive prototypes for Mage-OS membership promotion.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+---
+
+<PageLayout metadata={metadata} showDonationBanner={false}>
+  <section class="bg-slate-50 py-14 dark:bg-slate-950 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-bold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
+        Support campaign prototypes
+      </p>
+      <h1 class="mt-3 text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-5xl">
+        Five ways to make the ask
+      </h1>
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        <article
+          class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        >
+          <span
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300"
+          >
+            <Icon name="tabler:layout-navbar-expand" class="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h2 class="mt-5 text-xl font-bold text-slate-950 dark:text-white">Full-page CTA</h2>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            The original large, Wikipedia-style fundraising ask.
+          </p>
+          <button
+            type="button"
+            class="mt-5 inline-flex items-center gap-2 font-semibold text-orange-700 hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:text-orange-300 dark:hover:text-orange-200 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+            data-open-full-page-cta
+          >
+            Preview CTA
+            <Icon name="tabler:arrow-right" class="h-4 w-4" aria-hidden="true" />
+          </button>
+        </article>
+
+        <article
+          class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        >
+          <span
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300"
+          >
+            <Icon name="tabler:layout-bottombar-expand" class="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h2 class="mt-5 text-xl font-bold text-slate-950 dark:text-white">Minimal banner</h2>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            The compact single-message banner currently on the site.
+          </p>
+          <button
+            type="button"
+            class="mt-5 inline-flex items-center gap-2 font-semibold text-orange-700 hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:text-orange-300 dark:hover:text-orange-200 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+            data-open-minimal-banner
+          >
+            Preview banner
+            <Icon name="tabler:arrow-right" class="h-4 w-4" aria-hidden="true" />
+          </button>
+        </article>
+
+        <article
+          class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        >
+          <span
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300"
+          >
+            <Icon name="tabler:arrows-maximize" class="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h2 class="mt-5 text-xl font-bold text-slate-950 dark:text-white">Full-screen modal</h2>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            Maximum visibility for a short, occasional fundraising campaign.
+          </p>
+          <button
+            type="button"
+            class="mt-5 inline-flex items-center gap-2 font-semibold text-orange-700 hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:text-orange-300 dark:hover:text-orange-200 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+            data-open-support-modal
+          >
+            Preview modal
+            <Icon name="tabler:arrow-right" class="h-4 w-4" aria-hidden="true" />
+          </button>
+        </article>
+
+        <article
+          class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        >
+          <span
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300"
+          >
+            <Icon name="tabler:layout-sidebar-right-expand" class="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h2 class="mt-5 text-xl font-bold text-slate-950 dark:text-white">Slide-in</h2>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            Noticeable without interrupting the visitor’s current task.
+          </p>
+          <button
+            type="button"
+            class="mt-5 inline-flex items-center gap-2 font-semibold text-orange-700 hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:text-orange-300 dark:hover:text-orange-200 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+            data-open-support-drawer
+          >
+            Preview slide-in
+            <Icon name="tabler:arrow-right" class="h-4 w-4" aria-hidden="true" />
+          </button>
+        </article>
+
+        <article
+          class="rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm dark:border-orange-500/30 dark:bg-orange-500/10"
+        >
+          <span
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-orange-600 text-white dark:bg-orange-400 dark:text-slate-950"
+          >
+            <Icon name="tabler:layout-board-split" class="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h2 class="mt-5 text-xl font-bold text-slate-950 dark:text-white">In-page content ad</h2>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            A natural pause between content sections, with no overlay.
+          </p>
+          <a
+            href="#in-page-option"
+            class="mt-5 inline-flex items-center gap-2 font-semibold text-orange-700 hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:text-orange-300 dark:hover:text-orange-200 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+          >
+            View in-page option
+            <Icon name="tabler:arrow-down" class="h-4 w-4" aria-hidden="true" />
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="top">
+    <div class="scroll-mt-24" data-full-page-cta-preview hidden>
+      <aside
+        class="relative overflow-hidden border-y border-orange-500/40 bg-[#0b1426] text-white"
+        aria-labelledby="full-page-cta-title"
+      >
+        <div
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(123,45,45,0.28),transparent_38%)]"
+          aria-hidden="true"
+        >
+        </div>
+        <button
+          type="button"
+          class="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-300 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400 sm:right-6 sm:top-6"
+          aria-label="Close full-page CTA preview"
+          data-close-full-page-cta
+        >
+          <Icon name="tabler:x" class="h-6 w-6" aria-hidden="true" />
+        </button>
+
+        <div
+          class="relative mx-auto grid max-w-7xl gap-6 px-6 py-9 pr-16 sm:px-8 sm:py-10 sm:pr-20 lg:grid-cols-[1.3fr_0.82fr_0.82fr_auto] lg:items-center lg:gap-4 lg:px-10 lg:py-9 lg:pr-20"
+        >
+          <div>
+            <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-orange-300">
+              <Icon name="tabler:heart-handshake" class="h-5 w-5" aria-hidden="true" />
+              Community keeps Mage-OS moving
+            </p>
+            <h2
+              id="full-page-cta-title"
+              class="mt-3 text-3xl font-extrabold leading-tight tracking-tight lg:text-[1.7rem]"
+            >
+              Open-source commerce needs people like you.
+            </h2>
+            <p class="mt-4 max-w-xl text-base leading-7 text-slate-300 lg:text-sm lg:leading-6">
+              Mage-OS is an independent non-profit. Membership helps keep the platform modern, secure, and owned by the
+              community.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-600/70 bg-[#172236] p-5 lg:p-4">
+            <p class="text-lg font-bold lg:text-sm">What members get</p>
+            <ul class="mt-3 space-y-2.5 text-base text-slate-300 lg:mt-2 lg:space-y-1.5 lg:text-xs">
+              <li class="flex gap-3">
+                <Icon name="tabler:check" class="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+                A vote in community governance
+              </li>
+              <li class="flex gap-3">
+                <Icon name="tabler:check" class="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+                Access to the annual Assembly
+              </li>
+              <li class="flex gap-3">
+                <Icon name="tabler:check" class="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+                Member badge and grant eligibility
+              </li>
+            </ul>
+          </div>
+
+          <div class="rounded-xl border border-slate-600/70 bg-[#172236] p-5 lg:p-4">
+            <p class="text-lg font-bold lg:text-sm">What support makes possible</p>
+            <ul class="mt-3 space-y-2.5 text-base text-slate-300 lg:mt-2 lg:space-y-1.5 lg:text-xs">
+              <li class="flex gap-3">
+                <Icon name="tabler:code" class="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+                Platform features and security
+              </li>
+              <li class="flex gap-3">
+                <Icon name="tabler:gift" class="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+                Community development grants
+              </li>
+              <li class="flex gap-3">
+                <Icon name="tabler:users-group" class="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+                Documentation, events, and infrastructure
+              </li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <a
+              href={membershipUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-orange-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#0b1426]"
+            >
+              Join for €10/year
+              <Icon name="tabler:arrow-up-right" class="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a
+              href="/community"
+              class="inline-flex items-center justify-center rounded-lg border border-slate-600 bg-[#172236] px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#0b1426]"
+            >
+              Explore the impact
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scroll-mt-24" data-minimal-banner-preview hidden>
+      <DonationBanner />
+    </div>
+  </Fragment>
+
+  <section class="py-14 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 md:grid-cols-3">
+        {
+          ['Community-led roadmap', 'Open development', 'Transparent governance'].map((title, index) => (
+            <article class="rounded-2xl border border-slate-200 p-6 dark:border-slate-700">
+              <span class="text-sm font-bold text-orange-700 dark:text-orange-300">0{index + 1}</span>
+              <h2 class="mt-3 text-xl font-bold text-slate-950 dark:text-white">{title}</h2>
+              <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                Mage-OS is shaped in the open by the merchants, developers, and agencies who depend on it.
+              </p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <aside
+    id="in-page-option"
+    class="scroll-mt-24 border-y border-orange-300 bg-orange-50 py-10 dark:border-orange-500/30 dark:bg-slate-900"
+    aria-labelledby="in-page-option-title"
+  >
+    <div
+      class="mx-auto flex max-w-6xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8"
+    >
+      <div class="max-w-3xl">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
+          Support Mage-OS
+        </p>
+        <h2
+          id="in-page-option-title"
+          class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white"
+        >
+          Built by the community. Backed by you.
+        </h2>
+        <p class="mt-3 text-base leading-7 text-slate-700 dark:text-slate-300">
+          Membership funds features, grants, docs, and events—and gives you a vote.
+        </p>
+      </div>
+      <a
+        href={membershipUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-orange-600 px-6 py-3 font-bold text-white shadow-sm transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 dark:bg-orange-500 dark:text-slate-950 dark:hover:bg-orange-400 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900 lg:self-auto"
+      >
+        Join from €10/year
+        <Icon name="tabler:arrow-up-right" class="h-4 w-4" aria-hidden="true" />
+      </a>
+    </div>
+  </aside>
+
+  <section class="py-14 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl bg-slate-100 p-8 dark:bg-slate-800">
+        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Example page content continues here</p>
+        <div class="mt-5 h-3 w-full rounded bg-slate-200 dark:bg-slate-700"></div>
+        <div class="mt-3 h-3 w-10/12 rounded bg-slate-200 dark:bg-slate-700"></div>
+        <div class="mt-3 h-3 w-8/12 rounded bg-slate-200 dark:bg-slate-700"></div>
+      </div>
+    </div>
+  </section>
+
+  <dialog
+    id="support-modal-option"
+    class="m-0 h-screen max-h-none w-screen max-w-none bg-transparent p-0 backdrop:bg-slate-950/85"
+    aria-labelledby="support-modal-title"
+  >
+    <div
+      class="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-5 py-12 text-white sm:px-8"
+    >
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.32),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.18),transparent_36%)]"
+        aria-hidden="true"
+      >
+      </div>
+      <button
+        type="button"
+        class="absolute right-5 top-5 inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-300 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400 sm:right-8 sm:top-8"
+        aria-label="Close full-screen support message"
+        data-close-support-modal
+      >
+        <Icon name="tabler:x" class="h-7 w-7" aria-hidden="true" />
+      </button>
+
+      <div class="relative mx-auto max-w-3xl text-center">
+        <Icon name="tabler:heart-handshake" class="mx-auto h-12 w-12 text-orange-400" aria-hidden="true" />
+        <p class="mt-6 text-sm font-bold uppercase tracking-[0.22em] text-orange-300">A once-a-year ask</p>
+        <h2 id="support-modal-title" class="mt-4 text-4xl font-black leading-tight tracking-tight sm:text-6xl">
+          Mage-OS belongs to all of us. Help keep it that way.
+        </h2>
+        <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+          €10/year gives you a vote and funds the development, grants, and infrastructure the community relies on.
+        </p>
+        <div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <a
+            href={membershipUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-7 py-3.5 font-bold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-slate-950"
+          >
+            Become a member
+            <Icon name="tabler:arrow-up-right" class="h-5 w-5" aria-hidden="true" />
+          </a>
+          <button
+            type="button"
+            class="px-5 py-3 font-semibold text-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+            data-close-support-modal
+          >
+            Not now
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <aside
+    class="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-orange-300 bg-white p-6 shadow-2xl transition duration-300 dark:border-orange-500/30 dark:bg-slate-900 sm:bottom-6 sm:right-6"
+    role="dialog"
+    aria-labelledby="support-drawer-title"
+    aria-hidden="true"
+    data-support-drawer
+    data-open="false"
+  >
+    <button
+      type="button"
+      class="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 dark:hover:bg-white/10 dark:hover:text-white"
+      aria-label="Close slide-in support message"
+      data-close-support-drawer
+    >
+      <Icon name="tabler:x" class="h-5 w-5" aria-hidden="true" />
+    </button>
+    <Icon name="tabler:heart-handshake" class="h-8 w-8 text-orange-600 dark:text-orange-400" aria-hidden="true" />
+    <h2
+      id="support-drawer-title"
+      class="mt-4 pr-8 text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white"
+    >
+      Help keep Mage-OS independent.
+    </h2>
+    <p class="mt-3 leading-7 text-slate-600 dark:text-slate-300">Join from €10/year. Get a vote. Fund the work.</p>
+    <a
+      href={membershipUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-5 py-3 font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:bg-orange-500 dark:text-slate-950 dark:hover:bg-orange-400 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+    >
+      Become a member
+      <Icon name="tabler:arrow-up-right" class="h-4 w-4" aria-hidden="true" />
+    </a>
+  </aside>
+</PageLayout>
+
+<style>
+  [data-support-drawer] {
+    transform: translateX(calc(100% + 2rem));
+    visibility: hidden;
+  }
+
+  [data-support-drawer][data-open='true'] {
+    transform: translateX(0);
+    visibility: visible;
+  }
+</style>
+
+<script>
+  function setupSupportOptionPreviews() {
+    const fullPageCta = document.querySelector<HTMLElement>('[data-full-page-cta-preview]');
+    const fullPageCtaTrigger = document.querySelector<HTMLButtonElement>('[data-open-full-page-cta]');
+    const fullPageCtaClose = document.querySelector<HTMLButtonElement>('[data-close-full-page-cta]');
+
+    if (fullPageCta && fullPageCtaTrigger && fullPageCtaClose && fullPageCtaTrigger.dataset.bound !== 'true') {
+      fullPageCtaTrigger.dataset.bound = 'true';
+      fullPageCtaTrigger.addEventListener('click', () => {
+        if (minimalBannerPreview) minimalBannerPreview.hidden = true;
+        fullPageCta.hidden = false;
+        fullPageCta.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      fullPageCtaClose.addEventListener('click', () => {
+        fullPageCta.hidden = true;
+        fullPageCtaTrigger.focus();
+      });
+    }
+
+    const minimalBannerPreview = document.querySelector<HTMLElement>('[data-minimal-banner-preview]');
+    const minimalBanner = minimalBannerPreview?.querySelector<HTMLElement>('[data-donation-banner]');
+    const minimalBannerTrigger = document.querySelector<HTMLButtonElement>('[data-open-minimal-banner]');
+
+    if (
+      minimalBannerPreview &&
+      minimalBanner &&
+      minimalBannerTrigger &&
+      minimalBannerTrigger.dataset.bound !== 'true'
+    ) {
+      minimalBannerTrigger.dataset.bound = 'true';
+      minimalBannerTrigger.addEventListener('click', () => {
+        if (fullPageCta) fullPageCta.hidden = true;
+        minimalBannerPreview.hidden = false;
+        minimalBanner.hidden = false;
+        minimalBannerPreview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    const modal = document.querySelector<HTMLDialogElement>('#support-modal-option');
+    const modalTrigger = document.querySelector<HTMLButtonElement>('[data-open-support-modal]');
+    const modalCloseButtons = document.querySelectorAll<HTMLButtonElement>('[data-close-support-modal]');
+
+    if (modal && modalTrigger && modalTrigger.dataset.bound !== 'true') {
+      modalTrigger.dataset.bound = 'true';
+      modalTrigger.addEventListener('click', () => modal.showModal());
+      modalCloseButtons.forEach((button) => button.addEventListener('click', () => modal.close()));
+    }
+
+    const drawer = document.querySelector<HTMLElement>('[data-support-drawer]');
+    const drawerTrigger = document.querySelector<HTMLButtonElement>('[data-open-support-drawer]');
+    const drawerCloseButton = document.querySelector<HTMLButtonElement>('[data-close-support-drawer]');
+
+    if (drawer && drawerTrigger && drawerCloseButton && drawerTrigger.dataset.bound !== 'true') {
+      drawerTrigger.dataset.bound = 'true';
+      drawerTrigger.addEventListener('click', () => {
+        drawer.dataset.open = 'true';
+        drawer.setAttribute('aria-hidden', 'false');
+        drawerCloseButton.focus();
+      });
+      drawerCloseButton.addEventListener('click', () => {
+        drawer.dataset.open = 'false';
+        drawer.setAttribute('aria-hidden', 'true');
+        drawerTrigger.focus();
+      });
+    }
+  }
+
+  setupSupportOptionPreviews();
+  document.addEventListener('astro:after-swap', setupSupportOptionPreviews);
+</script>

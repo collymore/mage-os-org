@@ -1,0 +1,92 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const communityMembershipUrl = 'https://opencollective.com/mage-os/contribute/community-member-44722/checkout';
+---
+
+<aside
+  class="relative overflow-hidden border-b border-amber-300 bg-amber-50 text-slate-950 dark:border-amber-500/30 dark:bg-slate-900 dark:text-white"
+  aria-labelledby="donation-banner-title"
+  data-donation-banner
+>
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.20),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_42%)]"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 py-5 pr-16 sm:px-6 sm:pr-20 lg:py-6 lg:pl-8 lg:pr-24">
+    <button
+      type="button"
+      class="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-700 transition hover:bg-black/5 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-amber-50 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900 sm:right-5 sm:top-5 lg:top-1/2 lg:-translate-y-1/2"
+      aria-label="Dismiss support banner"
+      data-donation-banner-dismiss
+    >
+      <Icon name="tabler:x" class="h-6 w-6" aria-hidden="true" />
+    </button>
+
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
+      <div>
+        <p
+          class="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300"
+        >
+          <Icon name="tabler:heart-handshake" class="h-5 w-5" aria-hidden="true" />
+          Support Mage-OS
+        </p>
+        <h2 id="donation-banner-title" class="text-xl font-extrabold leading-tight tracking-tight sm:text-2xl">
+          Keep open-source commerce community-owned.
+        </h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-700 dark:text-slate-300 sm:text-base">
+          Join from €10/year to vote on Mage-OS and fund development, grants, and community infrastructure.
+        </p>
+      </div>
+
+      <div class="flex items-center">
+        <a
+          href={communityMembershipUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-amber-50 dark:bg-orange-500 dark:text-slate-950 dark:hover:bg-orange-400 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"
+        >
+          Join for €10/year
+          <Icon name="tabler:arrow-up-right" class="h-4 w-4" aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  const donationBannerStorageKey = 'mage-os:donation-banner:dismissed:2026-07';
+
+  function setupDonationBanner() {
+    const banner = document.querySelector<HTMLElement>('[data-donation-banner]');
+    if (!banner) return;
+
+    try {
+      if (localStorage.getItem(donationBannerStorageKey) === 'true') {
+        banner.hidden = true;
+        return;
+      }
+    } catch {
+      // Storage can be unavailable in privacy-restricted browsers; dismissal still works for the current page.
+    }
+
+    const dismissButton = banner.querySelector<HTMLButtonElement>('[data-donation-banner-dismiss]');
+    if (!dismissButton || dismissButton.dataset.bound === 'true') return;
+
+    dismissButton.dataset.bound = 'true';
+    dismissButton.addEventListener('click', () => {
+      banner.hidden = true;
+
+      try {
+        localStorage.setItem(donationBannerStorageKey, 'true');
+      } catch {
+        // Keep the banner dismissed for this page even when storage is unavailable.
+      }
+    });
+  }
+
+  setupDonationBanner();
+  document.addEventListener('astro:after-swap', setupDonationBanner);
+</script>
