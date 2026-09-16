@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "organisation": "mage-os-lab",
-  "catalogueUpdatedAt": "2026-09-03T15:21:44.169Z",
+  "catalogueUpdatedAt": "2026-09-16T13:49:35.271Z",
   "methodology": {
     "label": "Repository quality signals",
     "totalSignals": 6,
@@ -16,6 +16,61 @@
     "disclaimer": "Signals describe public repository readiness, not a security audit, support promise, or production certification."
   },
   "modules": [
+    {
+      "slug": "directory",
+      "title": "Directory",
+      "repository": "directory",
+      "url": "https://github.com/mage-os-lab/directory",
+      "issuesUrl": "https://github.com/mage-os-lab/directory/issues",
+      "summary": "Explore and discover available open source and free modules (and services) via the Mage-OS admin panel and mage-os.org",
+      "category": "Other",
+      "kind": "Lab project",
+      "howToUse": "See the repository README for current usage guidance.",
+      "install": "composer require mage-os/module-extension-directory",
+      "requirements": "PHP >=8.1; Mage-OS or Magento 2",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-extension-directory",
+      "archived": false,
+      "sourceUpdatedAt": "2026-09-13T04:22:37Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
+      "latestRelease": {
+        "tag": "0.1.1",
+        "date": "2026-09-13T04:22:38Z"
+      },
+      "language": "TypeScript",
+      "license": null,
+      "stars": 1,
+      "forks": 0,
+      "openIssues": 1,
+      "defaultBranch": "main",
+      "commitCount": 83,
+      "contributors": [
+        {
+          "login": "claude",
+          "url": "https://github.com/claude",
+          "contributions": 46
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 37
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": false,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
     {
       "slug": "graphql-playground",
       "title": "GraphQL Playground",
@@ -167,11 +222,11 @@
       "caveat": null,
       "package": null,
       "archived": false,
-      "sourceUpdatedAt": "2026-04-28T06:32:22Z",
-      "dataCheckedAt": "2026-08-02T20:36:34.908Z",
+      "sourceUpdatedAt": "2026-09-15T08:34:34Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
       "latestRelease": {
-        "tag": "v0.0.5",
-        "date": "2026-04-28T06:32:22Z"
+        "tag": "v0.1.1",
+        "date": "2026-09-15T08:48:50Z"
       },
       "language": "Go",
       "license": null,
@@ -179,7 +234,14 @@
       "forks": 1,
       "openIssues": 0,
       "defaultBranch": "main",
-      "commitCount": 32,
+      "commitCount": 56,
+      "contributors": [
+        {
+          "login": "michielgerritsen",
+          "url": "https://github.com/michielgerritsen",
+          "contributions": 56
+        }
+      ],
       "quality": {
         "score": 5,
         "total": 6,
@@ -192,14 +254,7 @@
           "automation": true,
           "recentActivity": true
         }
-      },
-      "contributors": [
-        {
-          "login": "michielgerritsen",
-          "url": "https://github.com/michielgerritsen",
-          "contributions": 32
-        }
-      ]
+      }
     },
     {
       "slug": "magento2-lsp",
@@ -324,8 +379,8 @@
       "caveat": null,
       "package": "migrate-m2-to-mageos",
       "archived": false,
-      "sourceUpdatedAt": "2026-08-20T11:47:58Z",
-      "dataCheckedAt": "2026-08-26T14:18:17.184Z",
+      "sourceUpdatedAt": "2026-09-09T10:33:03Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
       "latestRelease": null,
       "language": "Shell",
       "license": null,
@@ -333,12 +388,12 @@
       "forks": 2,
       "openIssues": 0,
       "defaultBranch": "main",
-      "commitCount": 25,
+      "commitCount": 27,
       "contributors": [
         {
           "login": "michielgerritsen",
           "url": "https://github.com/michielgerritsen",
-          "contributions": 21
+          "contributions": 22
         },
         {
           "login": "rhoerr",
@@ -553,14 +608,14 @@
       "caveat": null,
       "package": "mage-os/module-ai-base",
       "archived": false,
-      "sourceUpdatedAt": "2026-08-31T14:40:03Z",
-      "dataCheckedAt": "2026-09-03T15:21:44.169Z",
+      "sourceUpdatedAt": "2026-09-11T09:43:27Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
       "latestRelease": null,
       "language": "PHP",
       "license": null,
       "stars": 5,
       "forks": 1,
-      "openIssues": 1,
+      "openIssues": 2,
       "defaultBranch": "main",
       "commitCount": 65,
       "contributors": [
@@ -1053,6 +1108,53 @@
       ]
     },
     {
+      "slug": "module-claude-consumer-agent",
+      "title": "Claude Consumer Agent",
+      "repository": "module-claude-consumer-agent",
+      "url": "https://github.com/mage-os-lab/module-claude-consumer-agent",
+      "issuesUrl": "https://github.com/mage-os-lab/module-claude-consumer-agent/issues",
+      "summary": "A shopping assistant for Hyvä storefronts on Magento 2 and Mage-OS. Ports Anthropic's open-source shopping agent to a Magento module: it searches the catalog, explains products, adds them to the cart, checks orders and answers policy questions from the store's own data. Replies stream from the Claude Messages API into a side panel on every page.",
+      "category": "Other",
+      "kind": "Lab project",
+      "howToUse": "See the repository README for current usage guidance.",
+      "install": "composer require mage-os/module-claude-consumer-agent",
+      "requirements": "PHP ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0; Mage-OS or Magento 2",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-claude-consumer-agent",
+      "archived": false,
+      "sourceUpdatedAt": "2026-09-15T18:45:09Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
+      "latestRelease": null,
+      "language": "PHP",
+      "license": "OSL-3.0",
+      "stars": 2,
+      "forks": 1,
+      "openIssues": 0,
+      "defaultBranch": "main",
+      "commitCount": 109,
+      "contributors": [
+        {
+          "login": "gregor-RW",
+          "url": "https://github.com/gregor-RW",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 4,
+        "total": 6,
+        "label": "Developing",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": false,
+          "tests": true,
+          "automation": false,
+          "recentActivity": true
+        }
+      }
+    },
+    {
       "slug": "module-digital-signature",
       "title": "Digital Signature",
       "repository": "module-digital-signature",
@@ -1328,26 +1430,26 @@
       "caveat": null,
       "package": "mage-os/module-netsuite-connector",
       "archived": false,
-      "sourceUpdatedAt": "2026-08-26T21:07:21Z",
-      "dataCheckedAt": "2026-09-03T15:21:44.169Z",
+      "sourceUpdatedAt": "2026-09-15T20:10:47Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
       "latestRelease": null,
       "language": "PHP",
       "license": "OSL-3.0",
       "stars": 4,
-      "forks": 0,
+      "forks": 2,
       "openIssues": 0,
       "defaultBranch": "main",
-      "commitCount": 2,
+      "commitCount": 5,
       "contributors": [],
       "quality": {
-        "score": 3,
+        "score": 4,
         "total": 6,
         "label": "Developing",
         "signals": {
           "documentation": true,
           "installable": true,
           "release": false,
-          "tests": false,
+          "tests": true,
           "automation": false,
           "recentActivity": true
         }
@@ -1417,6 +1519,100 @@
           "contributions": 1
         }
       ]
+    },
+    {
+      "slug": "module-opensearch-hybrid",
+      "title": "Opensearch Hybrid",
+      "repository": "module-opensearch-hybrid",
+      "url": "https://github.com/mage-os-lab/module-opensearch-hybrid",
+      "issuesUrl": "https://github.com/mage-os-lab/module-opensearch-hybrid/issues",
+      "summary": "OpenSearch Hybrid is an open-source module for Mage-OS 3.5 that combines keyword relevance with semantic reranking of the top 100 search results. It preserves native facets and result counts, supports per-store activation, and falls back to native search when needed. Currently an engineering pilot.",
+      "category": "Other",
+      "kind": "Lab project",
+      "howToUse": "See the repository README for current usage guidance.",
+      "install": "composer require mage-os/module-opensearch-hybrid",
+      "requirements": "PHP ~8.4.0||~8.5.0; Mage-OS or Magento 2",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-opensearch-hybrid",
+      "archived": false,
+      "sourceUpdatedAt": "2026-09-09T18:42:12Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
+      "latestRelease": null,
+      "language": "Python",
+      "license": "OSL-3.0",
+      "stars": 0,
+      "forks": 0,
+      "openIssues": 0,
+      "defaultBranch": "main",
+      "commitCount": 2,
+      "contributors": [
+        {
+          "login": "mattmacrocket",
+          "url": "https://github.com/mattmacrocket",
+          "contributions": 2
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": false,
+          "tests": true,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-opensearch-relevance-workbench",
+      "title": "Opensearch Relevance Workbench",
+      "repository": "module-opensearch-relevance-workbench",
+      "url": "https://github.com/mage-os-lab/module-opensearch-relevance-workbench",
+      "issuesUrl": "https://github.com/mage-os-lab/module-opensearch-relevance-workbench/issues",
+      "summary": "An experimental Mage-OS Admin workbench for improving OpenSearch relevance. Compare field-boost changes, rate real search results, review evidence, and activate or roll back accepted candidates. Includes guided merchant reviews and optional LLM-assisted judgments.",
+      "category": "Other",
+      "kind": "Lab project",
+      "howToUse": "See the repository README for current usage guidance.",
+      "install": "composer require mage-os/module-opensearch-relevance-workbench",
+      "requirements": "PHP ~8.3.0||~8.4.0||~8.5.0; Mage-OS or Magento 2",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-opensearch-relevance-workbench",
+      "archived": false,
+      "sourceUpdatedAt": "2026-09-09T18:26:43Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
+      "latestRelease": null,
+      "language": "PHP",
+      "license": "OSL-3.0",
+      "stars": 0,
+      "forks": 0,
+      "openIssues": 0,
+      "defaultBranch": "main",
+      "commitCount": 1,
+      "contributors": [
+        {
+          "login": "mattmacrocket",
+          "url": "https://github.com/mattmacrocket",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": false,
+          "tests": true,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
     },
     {
       "slug": "module-opentelemetry",
@@ -1572,24 +1768,29 @@
       "caveat": null,
       "package": "mage-os/module-profiler",
       "archived": false,
-      "sourceUpdatedAt": "2026-09-02T14:06:25Z",
-      "dataCheckedAt": "2026-09-03T15:21:44.169Z",
+      "sourceUpdatedAt": "2026-09-13T11:17:00Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
       "latestRelease": {
         "tag": "1.0.0",
         "date": "2026-08-31T15:56:11Z"
       },
       "language": "PHP",
       "license": "OSL-3.0",
-      "stars": 1,
-      "forks": 0,
-      "openIssues": 0,
+      "stars": 3,
+      "forks": 3,
+      "openIssues": 3,
       "defaultBranch": "main",
-      "commitCount": 7,
+      "commitCount": 9,
       "contributors": [
         {
           "login": "MagePsycho",
           "url": "https://github.com/MagePsycho",
-          "contributions": 7
+          "contributions": 8
+        },
+        {
+          "login": "paales",
+          "url": "https://github.com/paales",
+          "contributions": 1
         }
       ],
       "quality": {
@@ -1774,31 +1975,34 @@
       "caveat": null,
       "package": "mage-os/module-shopping-feed",
       "archived": false,
-      "sourceUpdatedAt": "2026-09-01T15:35:17Z",
-      "dataCheckedAt": "2026-09-03T15:21:44.169Z",
-      "latestRelease": null,
+      "sourceUpdatedAt": "2026-09-09T21:19:34Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
+      "latestRelease": {
+        "tag": "v1.0.0",
+        "date": "2026-09-09T20:44:33Z"
+      },
       "language": "PHP",
       "license": "OSL-3.0",
-      "stars": 6,
+      "stars": 7,
       "forks": 1,
       "openIssues": 0,
       "defaultBranch": "main",
-      "commitCount": 5,
+      "commitCount": 11,
       "contributors": [
         {
           "login": "mattmacrocket",
           "url": "https://github.com/mattmacrocket",
-          "contributions": 5
+          "contributions": 11
         }
       ],
       "quality": {
-        "score": 5,
+        "score": 6,
         "total": 6,
         "label": "Strong signals",
         "signals": {
           "documentation": true,
           "installable": true,
-          "release": false,
+          "release": true,
           "tests": true,
           "automation": true,
           "recentActivity": true
@@ -2066,19 +2270,36 @@
       "caveat": null,
       "package": "mage-os/module-widgetkit",
       "archived": false,
-      "sourceUpdatedAt": "2026-06-08T14:11:56Z",
-      "dataCheckedAt": "2026-08-02T20:36:34.908Z",
+      "sourceUpdatedAt": "2026-09-15T09:59:58Z",
+      "dataCheckedAt": "2026-09-16T13:49:35.271Z",
       "latestRelease": {
-        "tag": "1.4.8",
-        "date": "2026-06-08T14:12:16Z"
+        "tag": "2.2.0",
+        "date": "2026-09-15T10:00:22Z"
       },
       "language": "HTML",
       "license": "MIT",
-      "stars": 8,
+      "stars": 9,
       "forks": 3,
-      "openIssues": 0,
+      "openIssues": 1,
       "defaultBranch": "master",
-      "commitCount": 31,
+      "commitCount": 35,
+      "contributors": [
+        {
+          "login": "dadolun95",
+          "url": "https://github.com/dadolun95",
+          "contributions": 27
+        },
+        {
+          "login": "GrimLink",
+          "url": "https://github.com/GrimLink",
+          "contributions": 4
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 4
+        }
+      ],
       "quality": {
         "score": 4,
         "total": 6,
@@ -2091,24 +2312,7 @@
           "automation": false,
           "recentActivity": true
         }
-      },
-      "contributors": [
-        {
-          "login": "dadolun95",
-          "url": "https://github.com/dadolun95",
-          "contributions": 24
-        },
-        {
-          "login": "GrimLink",
-          "url": "https://github.com/GrimLink",
-          "contributions": 4
-        },
-        {
-          "login": "SamueleMartini",
-          "url": "https://github.com/SamueleMartini",
-          "contributions": 3
-        }
-      ]
+      }
     },
     {
       "slug": "module-worker-mode",
