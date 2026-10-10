@@ -28,6 +28,16 @@ const excludedRepositories = new Set([
 ]);
 
 const curation = {
+  directory: {
+    title: 'Extension Directory',
+    category: 'Developer tools',
+    kind: 'Discovery module',
+    summary:
+      'A searchable directory of open-source Mage-OS and Magento extensions, available on the web and inside the admin.',
+    howToUse:
+      'Install the admin module to browse compatibility and quality signals under System → Extensions → Extension Directory, or use the public directory site.',
+    requirements: 'PHP 8.1+; Mage-OS or Magento 2.4',
+  },
   'graphql-playground': {
     title: 'GraphQL Playground',
     category: 'Developer tools',
@@ -37,6 +47,24 @@ const curation = {
     requirements: 'PHP 8.1+; Mage-OS or Magento 2 with GraphQL',
     status: 'Experimental',
     note: 'The maintainers explicitly state that this module is not intended for production use.',
+  },
+  'library-ai-opencode-custom-platform': {
+    title: 'OpenCode Custom Platform',
+    category: 'AI & automation',
+    kind: 'AI integration library',
+    summary:
+      'Connects Symfony AI and Mage-OS AI Base to a self-hosted OpenCode server while keeping provider credentials on that server.',
+    howToUse:
+      'Install the Composer library, secure an OpenCode server, then configure its base URL and model through AI Base.',
+    requirements: 'PHP; Symfony AI; a secured OpenCode server',
+  },
+  'library-ai-opencode-zen-platform': {
+    title: 'OpenCode Zen Platform',
+    category: 'AI & automation',
+    kind: 'AI integration library',
+    summary: 'Adds OpenCode Zen chat-completion models to Symfony AI and Mage-OS AI Base.',
+    howToUse: 'Install the Composer library, add an OpenCode Zen credential in AI Base, and select a supported model.',
+    requirements: 'PHP; Symfony AI; an OpenCode Zen API key',
   },
   'llms.txt': {
     title: 'LLMs.txt',
@@ -75,6 +103,18 @@ const curation = {
     summary: 'Reusable components for producing clearer output in Mage-OS console commands.',
     howToUse: 'Reference the package from a custom console command and use its output components.',
     note: 'This repository is archived and no longer actively maintained.',
+  },
+  'magento-workflows': {
+    title: 'Magento Workflows',
+    category: 'AI & automation',
+    kind: 'Automation suite',
+    summary:
+      'A native trigger-condition-action engine for automating store operations with an admin builder, REST API, CLI, and dry-run support.',
+    howToUse:
+      'Evaluate it in development, build a workflow from a trigger, conditions, and actions, then test it in dry-run mode before activation.',
+    requirements: 'Mage-OS or Magento 2; currently pre-alpha',
+    status: 'Experimental',
+    note: 'The project is pre-alpha and should not yet be used in production.',
   },
   'migrate-m2-to-mageos': {
     title: 'Migrate Magento 2 to Mage-OS',
@@ -122,6 +162,25 @@ const curation = {
     howToUse:
       'Install and enable the module, configure providers under Services → AI Configuration, then integrate through its provider interfaces.',
     requirements: 'PHP 8.2+; Mage-OS or Magento 2',
+  },
+  'module-aeo': {
+    title: 'Answer Engine Optimisation',
+    category: 'SEO & discovery',
+    kind: 'Commerce module',
+    summary:
+      'Publishes machine-readable store and catalogue information for AI assistants through llms.txt and related feeds.',
+    howToUse:
+      'Install the module, configure its answer-engine feeds, then validate the generated crawler files and catalogue output.',
+    requirements: 'Mage-OS or Magento 2',
+  },
+  'module-agentic': {
+    title: 'Agentic Commerce',
+    category: 'AI & automation',
+    kind: 'Commerce module',
+    summary: 'Explores the store APIs and capabilities needed for AI agents to discover and complete commerce tasks.',
+    howToUse: 'Review the documented agent endpoints and evaluate the current implementation in a development store.',
+    requirements: 'Mage-OS or Magento 2; evolving agent tooling',
+    status: 'Experimental',
   },
   'module-alpine-loader': {
     title: 'Alpine Loader',
@@ -196,6 +255,37 @@ const curation = {
     howToUse: 'Configure an AI provider, then generate content from supported product-editing workflows in the admin.',
     requirements: 'PHP 8.1+; Mage-OS or Magento 2; AI provider credentials',
   },
+  'module-checkout-guard': {
+    title: 'Checkout Guard',
+    category: 'Security & access',
+    kind: 'Security module',
+    summary:
+      'Blocks unused REST payment routes and deactivates carts after repeated failures to reduce automated card-testing attacks.',
+    howToUse:
+      'Configure the payment routes used by the storefront and set failure limits, then monitor blocked requests before tightening enforcement.',
+    requirements: 'Mage-OS or Magento 2; Magewire or headless checkout',
+  },
+  'module-claude-consumer-agent': {
+    title: 'Claude Consumer Agent',
+    category: 'AI & automation',
+    kind: 'Storefront assistant',
+    summary:
+      'A streaming AI shopping assistant for Hyvä that searches products, explains choices, manages carts, checks orders, and answers store-policy questions.',
+    howToUse:
+      'Install the module, configure the Claude API and storefront panel, then test its catalogue, cart, order, and policy tools.',
+    requirements: 'Mage-OS or Magento 2; Hyvä; Anthropic API credentials',
+    status: 'Experimental',
+  },
+  'module-customer-two-factor-auth': {
+    title: 'Customer Two-Factor Authentication',
+    category: 'Security & access',
+    kind: 'Customer security module',
+    summary:
+      'Adds customer TOTP authentication, recovery codes, admin reset controls, and Luma and Hyvä storefront support.',
+    howToUse:
+      'Install the module, enable customer two-factor authentication, and let customers enrol an authenticator from their account.',
+    requirements: 'Mage-OS or Magento 2; Luma or Hyvä',
+  },
   'module-digital-signature': {
     title: 'Digital Signature',
     category: 'Admin & operations',
@@ -225,6 +315,16 @@ const curation = {
     status: 'Incubating',
     note: 'The repository was created recently and does not yet contain an implementation.',
   },
+  'module-faq': {
+    title: 'FAQ',
+    category: 'Content & merchandising',
+    kind: 'Commerce module',
+    summary:
+      'Manages customer-facing FAQs and the structured data that helps search and answer engines understand them.',
+    howToUse:
+      'Create and organise FAQs in the admin, publish them in the storefront, and validate the generated schema.',
+    requirements: 'Mage-OS or Magento 2',
+  },
   'module-hreflang': {
     title: 'Hreflang',
     category: 'SEO & discovery',
@@ -232,6 +332,16 @@ const curation = {
     summary: 'Adds locale-aware hreflang links for CMS pages, products, and categories.',
     howToUse: 'Install and enable the module, then configure locale relationships for relevant store views and URLs.',
     requirements: 'PHP 8.1+; Mage-OS or Magento 2',
+  },
+  'module-inline-docs': {
+    title: 'Inline Admin Documentation',
+    category: 'Admin & operations',
+    kind: 'Admin module',
+    summary:
+      'Adds local, contextual help for hundreds of Magento configuration fields that do not include native comments.',
+    howToUse:
+      'Install the module, then open Stores → Configuration and use its inline explanations while configuring the store.',
+    requirements: 'Mage-OS or Magento 2; no external documentation service required',
   },
   'module-js-replacement': {
     title: 'JavaScript Replacement',
@@ -253,6 +363,18 @@ const curation = {
     howToUse: 'Install the module, provide a GeoLite2 database, and configure country-to-store redirect rules.',
     requirements: 'PHP 8.1+; Mage-OS or Magento 2; MaxMind GeoLite2 data',
   },
+  'module-netsuite-connector': {
+    title: 'NetSuite Connector',
+    category: 'Admin & operations',
+    kind: 'Integration module',
+    summary:
+      'Synchronises products, customers, orders, inventory, and related commerce data between Mage-OS and Oracle NetSuite.',
+    howToUse:
+      'Configure NetSuite SOAP credentials, map the required records, then use the queue and monitoring tools to stage a controlled rollout.',
+    requirements: 'Mage-OS or Magento 2; Oracle NetSuite SOAP access',
+    status: 'Experimental',
+    note: 'The connector is evolving and does not provide an automatic migration from earlier Rocket Web modules.',
+  },
   'module-newsletter-coupon': {
     title: 'Newsletter Coupon',
     category: 'Content & merchandising',
@@ -262,6 +384,40 @@ const curation = {
     howToUse:
       'Configure the source cart rule and newsletter behaviour, then the module generates coupons during subscription.',
     requirements: 'PHP 8.1+; Mage-OS or Magento 2',
+  },
+  'module-opensearch-hybrid': {
+    title: 'OpenSearch Hybrid',
+    category: 'SEO & discovery',
+    kind: 'Search module',
+    summary:
+      'Combines native keyword results with semantic reranking while preserving facets, counts, per-store controls, and fallback behaviour.',
+    howToUse:
+      'Enable it on a development store, configure the semantic model, and compare ranked results against the native search fallback.',
+    requirements: 'Mage-OS 3.5; OpenSearch; embedding model',
+    status: 'Experimental',
+    note: 'The repository describes the current implementation as an engineering pilot.',
+  },
+  'module-opensearch-relevance-workbench': {
+    title: 'OpenSearch Relevance Workbench',
+    category: 'SEO & discovery',
+    kind: 'Admin search tool',
+    summary:
+      'Lets merchants compare search tuning candidates, rate real results, review evidence, and activate or roll back accepted settings.',
+    howToUse:
+      'Create a candidate in the admin workbench, run guided result reviews, then activate it only after the evidence is accepted.',
+    requirements: 'Mage-OS or Magento 2; OpenSearch',
+    status: 'Experimental',
+  },
+  'module-opentelemetry': {
+    title: 'OpenTelemetry',
+    category: 'Developer tools',
+    kind: 'Observability concept',
+    summary: 'A reserved Lab project for adding OpenTelemetry traces and metrics to Mage-OS and Magento.',
+    howToUse: 'Not installable yet; follow the repository for its first implementation.',
+    requirements: 'Not yet documented',
+    install: 'Not installable yet',
+    status: 'Incubating',
+    note: 'The repository does not yet contain an implementation or usage documentation.',
   },
   'module-page-builder-graph-ql': {
     title: 'Page Builder GraphQL',
@@ -280,6 +436,23 @@ const curation = {
     howToUse: 'Enable the module over HTTPS, then customers can register and manage passkeys from their account.',
     requirements: 'PHP 8.2+; Mage-OS or Magento 2; HTTPS and a WebAuthn-capable browser',
     note: 'The latest published release is a beta; evaluate account recovery and browser coverage before production rollout.',
+  },
+  'module-profiler': {
+    title: 'Profiler',
+    category: 'Developer tools',
+    kind: 'Developer module',
+    summary: 'Adds table and JSON output formats to Magento profiling for easier analysis and tooling integrations.',
+    howToUse:
+      'Enable Magento profiling in development, select the table or JSON output type, then inspect request timings.',
+    requirements: 'Mage-OS or Magento 2; developer environment',
+  },
+  'module-profiler-admin-ui': {
+    title: 'Profiler Admin UI',
+    category: 'Developer tools',
+    kind: 'Developer module',
+    summary: 'Provides an admin viewer for the JSON profiling reports created by the Mage-OS Profiler module.',
+    howToUse: 'Install it with Mage-OS Profiler, generate JSON reports, then compare them in the admin viewer.',
+    requirements: 'Mage-OS Profiler; Mage-OS or Magento 2',
   },
   'module-require-js-optimizer': {
     title: 'RequireJS Optimizer',
@@ -302,6 +475,24 @@ const curation = {
       'Install the module, configure the required SEO features per store, then validate generated markup and crawler files.',
     requirements: 'PHP 8.1–8.5; Mage-OS or Magento 2',
   },
+  'module-shopping-feed': {
+    title: 'Shopping Feed',
+    category: 'Content & merchandising',
+    kind: 'Commerce module',
+    summary:
+      'Builds scheduled product feeds for Google, Meta, Microsoft, TikTok, Pinterest, local inventory, promotions, and custom destinations.',
+    howToUse:
+      'Choose a channel preset or custom mapping, configure filters and delivery, then preview and schedule feed generation.',
+    requirements: 'Mage-OS or Magento 2; channel account or delivery destination',
+  },
+  'module-social-login': {
+    title: 'Social Login',
+    category: 'Security & access',
+    kind: 'Customer module',
+    summary: 'Adds social sign-in options for Mage-OS and Magento customer accounts.',
+    howToUse: 'Install the module, configure supported identity providers, and test sign-in and account-linking flows.',
+    requirements: 'Mage-OS or Magento 2; identity-provider credentials',
+  },
   'module-store-locator': {
     title: 'Store Locator',
     category: 'Storefront',
@@ -311,6 +502,17 @@ const curation = {
     howToUse:
       'Create stores in the admin, choose Google Maps or OpenStreetMap, then link the locator page from the storefront.',
     requirements: 'PHP 8.1+; Mage-OS or Magento 2; map provider configuration',
+  },
+  'module-template-parser': {
+    title: 'Template Parser',
+    category: 'Developer tools',
+    kind: 'Developer concept',
+    summary: 'A reserved Lab project for parsing Mage-OS and Magento template structures.',
+    howToUse: 'Not installable yet; follow the repository for its first documented implementation.',
+    requirements: 'Not yet documented',
+    install: 'Not installable yet',
+    status: 'Incubating',
+    note: 'The repository does not yet contain an implementation or usage documentation.',
   },
   'module-theme-uikit': {
     title: 'UIkit Theme Utilities',
