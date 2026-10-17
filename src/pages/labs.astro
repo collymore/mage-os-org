@@ -22,15 +22,14 @@ const modules: Project[] = [...catalogue.modules, ...catalogue.graduatedModules]
 );
 const activeModules = modules.filter((module) => !module.archived);
 const defaultModules = activeModules.filter((module) => module.graduated || module.quality.label !== 'Incubating');
-const categories = [...new Set([...activeModules.map((module) => module.category), 'Graduated'])].sort();
-const qualityLabels = ['Strong signals', 'Developing', 'Experimental', 'Incubating'];
+const categories = [...new Set(activeModules.map((module) => module.category))].sort();
+const qualityLabels = ['Graduated', 'Strong signals', 'Developing', 'Experimental', 'Incubating'];
 
 const categoryIcons: Record<string, string> = {
   'Admin & operations': 'tabler:settings-cog',
   'AI & automation': 'tabler:sparkles',
   'Content & merchandising': 'tabler:layout-grid',
   'Developer tools': 'tabler:tools',
-  Graduated: 'tabler:school',
   'Performance & runtime': 'tabler:gauge',
   'Security & access': 'tabler:shield-lock',
   'SEO & discovery': 'tabler:world-search',
@@ -198,11 +197,7 @@ const formatDate = (value: string) =>
                       <Icon name={categoryIcons[category] ?? 'tabler:flask'} class="h-5 w-5 shrink-0" />
                       <span class="flex-1">{category}</span>
                       <span class="text-xs text-muted dark:text-slate-400">
-                        {
-                          defaultModules.filter((module) =>
-                            category === 'Graduated' ? module.graduated : module.category === category
-                          ).length
-                        }
+                        {defaultModules.filter((module) => module.category === category).length}
                       </span>
                     </button>
                   ))
@@ -432,7 +427,7 @@ const formatDate = (value: string) =>
             <button
               type="submit"
               class="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary dark:hover:bg-slate-800 dark:hover:text-white"
-              aria-label="Close quick view"
+              aria-label="Close project view"
             >
               <Icon name="tabler:x" class="h-5 w-5" />
             </button>
@@ -850,12 +845,12 @@ const formatDate = (value: string) =>
     }
 
     const parameters = new URLSearchParams(window.location.search);
-    const legacyGraduatedFilter = parameters.get('readiness') === 'Graduated';
-    let selectedCategory = parameters.get('category') ?? (legacyGraduatedFilter ? 'Graduated' : '');
+    const legacyGraduatedCategory = parameters.get('category') === 'Graduated';
+    let selectedCategory = legacyGraduatedCategory ? '' : (parameters.get('category') ?? '');
     if (!categoryButtons.some((button) => button.dataset.categoryValue === selectedCategory)) selectedCategory = '';
     let favouritesOnly = parameters.get('favourites') === '1' && favouriteSlugs.size > 0;
     search.value = parameters.get('q') ?? '';
-    quality.value = legacyGraduatedFilter ? '' : (parameters.get('readiness') ?? '');
+    quality.value = legacyGraduatedCategory ? 'Graduated' : (parameters.get('readiness') ?? '');
     sort.value = parameters.get('sort') ?? 'quality';
     let activeDialogModule: LabModule | null = null;
     const readmeCache = new Map<string, string | null>();
@@ -960,21 +955,22 @@ const formatDate = (value: string) =>
     };
 
     const matchesSelectedCategory = (card: HTMLElement) =>
-      !selectedCategory ||
-      (selectedCategory === 'Graduated'
-        ? card.dataset.graduated === 'true'
-        : card.dataset.category === selectedCategory);
+      !selectedCategory || card.dataset.category === selectedCategory;
 
     const matchesFavourites = (card: HTMLElement) => !favouritesOnly || favouriteSlugs.has(card.dataset.slug ?? '');
 
     const cardStatus = (card: HTMLElement) =>
-      card.dataset.archived === 'true' ? 'Archived' : (card.dataset.quality ?? '');
+      card.dataset.archived === 'true'
+        ? 'Archived'
+        : card.dataset.graduated === 'true'
+          ? 'Graduated'
+          : (card.dataset.quality ?? '');
 
     const matchesSelectedStatus = (card: HTMLElement) => {
       if (quality.value === 'Archived') return card.dataset.archived === 'true';
       if (card.dataset.archived === 'true') return false;
-      if (quality.value) return card.dataset.quality === quality.value;
-      return card.dataset.quality !== 'Incubating';
+      if (quality.value) return cardStatus(card) === quality.value;
+      return card.dataset.graduated === 'true' || card.dataset.quality !== 'Incubating';
     };
 
     const updateFacetOptions = () => {
