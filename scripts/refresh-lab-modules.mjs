@@ -28,6 +28,18 @@ const excludedRepositories = new Set([
 ]);
 
 const curation = {
+  'agent-skills': {
+    title: 'AI Agent Skills',
+    category: 'Developer tools',
+    kind: 'AI development tooling',
+    summary:
+      'Shared skills for AI coding tools, starting with a module-standards audit covering code quality, tests, admin experience, security, and documentation.',
+    howToUse:
+      'Install the module-standards skill in an Agent Skills-compatible tool, then use it to review and improve a Mage-OS or Magento module one area at a time.',
+    requirements: 'An Agent Skills-compatible coding tool, such as Claude Code, Codex, Gemini CLI, or Cursor',
+    install:
+      'npx skills add https://github.com/mage-os-lab/agent-skills/tree/main/plugins/module-standards/skills/module-standards -g',
+  },
   directory: {
     title: 'Extension Directory',
     category: 'Developer tools',
@@ -124,7 +136,7 @@ const curation = {
       'A guided shell migration that switches a compatible Magento Open Source installation to Mage-OS packages.',
     howToUse:
       'Back up and test on staging, review the migration script, then run the command documented in the repository.',
-    requirements: 'A compatible Magento Open Source installation; shell access',
+    requirements: 'Magento Open Source 2.4.9; developer mode; local or staging environment; shell access',
     install:
       'bash <(curl -s https://raw.githubusercontent.com/mage-os-lab/migrate-m2-to-mageos/refs/heads/main/migrate-to-mage-os.sh)',
   },
@@ -163,6 +175,18 @@ const curation = {
       'Install and enable the module, configure providers under Services → AI Configuration, then integrate through its provider interfaces.',
     requirements: 'PHP 8.2+; Mage-OS or Magento 2',
   },
+  'module-ai-shopping-assistant': {
+    title: 'AI Shopping Assistant',
+    category: 'AI & automation',
+    kind: 'Storefront assistant',
+    summary:
+      'A streaming shopping assistant for Hyvä and Luma that searches products, explains choices, manages carts, checks orders, and answers store-policy questions.',
+    howToUse:
+      'Install with AI Base, configure an AI service and the storefront panel, then test product search, cart actions, order lookup, and policy answers in development.',
+    requirements: 'PHP 8.2–8.5; Magento 2.4.7+ or Mage-OS; AI Base; Hyvä 1.5+ with Tailwind 4 or a Luma-based theme',
+    status: 'Experimental',
+    note: 'Renamed from Claude Consumer Agent; existing installations need the migration steps in the README.',
+  },
   'module-aeo': {
     title: 'Answer Engine Optimisation',
     category: 'SEO & discovery',
@@ -171,7 +195,7 @@ const curation = {
       'Publishes machine-readable store and catalogue information for AI assistants through llms.txt and related feeds.',
     howToUse:
       'Install the module, configure its answer-engine feeds, then validate the generated crawler files and catalogue output.',
-    requirements: 'Mage-OS or Magento 2',
+    requirements: 'PHP 8.3–8.5; Magento 2.4.7+ or Mage-OS; SEO ^2.0',
   },
   'module-agentic': {
     title: 'Agentic Commerce',
@@ -247,6 +271,27 @@ const curation = {
     howToUse: 'Install it with the main Blog module when the storefront uses a Hyvä theme.',
     requirements: 'Mage-OS Blog and a Hyvä theme',
   },
+  'module-blog-seo': {
+    title: 'Blog SEO Bridge',
+    category: 'SEO & discovery',
+    kind: 'Integration module',
+    summary:
+      'Connects the Blog and SEO modules so each post has one consistent BlogPosting description and shared organisation identity in its structured data.',
+    howToUse:
+      'Install alongside Blog and SEO, then configure the organisation under Marketing → SEO → Organization; no extra bridge settings are required.',
+    requirements: 'PHP 8.3–8.5; Magento 2.4.7+ or Mage-OS; Blog ^1.3; SEO ^2.0',
+  },
+  'module-catalog-image-cleanup': {
+    title: 'Catalog Image Cleanup',
+    category: 'Admin & operations',
+    kind: 'Maintenance module',
+    summary:
+      'Finds unused product and category image files, cleans old resized copies, and removes unreferenced images after catalogue changes.',
+    howToUse:
+      'Run mageos:catalog-images:cleanup with --dry-run first, review the report, then use --backup to move unused files before enabling automatic cleanup.',
+    requirements: 'PHP 8.1+; Mage-OS or Magento 2; local media filesystem',
+    note: 'Back up media before cleanup. The CLI does not scan remote storage such as S3.',
+  },
   'module-catalog-data-ai': {
     title: 'AI Catalog Data',
     category: 'AI & automation',
@@ -264,17 +309,6 @@ const curation = {
     howToUse:
       'Configure the payment routes used by the storefront and set failure limits, then monitor blocked requests before tightening enforcement.',
     requirements: 'Mage-OS or Magento 2; Magewire or headless checkout',
-  },
-  'module-claude-consumer-agent': {
-    title: 'Claude Consumer Agent',
-    category: 'AI & automation',
-    kind: 'Storefront assistant',
-    summary:
-      'A streaming AI shopping assistant for Hyvä that searches products, explains choices, manages carts, checks orders, and answers store-policy questions.',
-    howToUse:
-      'Install the module, configure the Claude API and storefront panel, then test its catalogue, cart, order, and policy tools.',
-    requirements: 'Mage-OS or Magento 2; Hyvä; Anthropic API credentials',
-    status: 'Experimental',
   },
   'module-customer-two-factor-auth': {
     title: 'Customer Two-Factor Authentication',
@@ -323,7 +357,7 @@ const curation = {
       'Manages customer-facing FAQs and the structured data that helps search and answer engines understand them.',
     howToUse:
       'Create and organise FAQs in the admin, publish them in the storefront, and validate the generated schema.',
-    requirements: 'Mage-OS or Magento 2',
+    requirements: 'PHP 8.3–8.5; Magento 2.4.7+ or Mage-OS; SEO ^2.0; optional Page Builder',
   },
   'module-hreflang': {
     title: 'Hreflang',
@@ -338,9 +372,9 @@ const curation = {
     category: 'Admin & operations',
     kind: 'Admin module',
     summary:
-      'Adds local, contextual help for hundreds of Magento configuration fields that do not include native comments.',
+      'Adds local documentation cards for around 7,400 core configuration fields, including accepted values and technical details.',
     howToUse:
-      'Install the module, then open Stores → Configuration and use its inline explanations while configuring the store.',
+      'Install the module, enable Inline Documentation under Stores → Configuration → Advanced, then use the help markers beside configuration fields.',
     requirements: 'Mage-OS or Magento 2; no external documentation service required',
   },
   'module-js-replacement': {
@@ -432,10 +466,10 @@ const curation = {
     title: 'Passkey Authentication',
     category: 'Security & access',
     kind: 'Customer module',
-    summary: 'Lets storefront customers register and sign in with WebAuthn passkeys.',
-    howToUse: 'Enable the module over HTTPS, then customers can register and manage passkeys from their account.',
-    requirements: 'PHP 8.2+; Mage-OS or Magento 2; HTTPS and a WebAuthn-capable browser',
-    note: 'The latest published release is a beta; evaluate account recovery and browser coverage before production rollout.',
+    summary: 'Adds customer passkey sign-in, account credential management, and an admin passkey two-factor provider.',
+    howToUse:
+      'Install over HTTPS, enable customer passkeys in Customer Configuration, and test registration, recovery, and sign-in for the selected storefront.',
+    requirements: 'PHP 8.2+; Magento 2.4.6+ or Mage-OS; HTTPS and a WebAuthn-capable browser',
   },
   'module-profiler': {
     title: 'Profiler',
@@ -466,14 +500,14 @@ const curation = {
     note: 'The README describes this as a proof of concept with incomplete controller handling.',
   },
   'module-seo': {
-    title: 'SEO, AEO & GEO',
+    title: 'SEO & Structured Data',
     category: 'SEO & discovery',
     kind: 'Commerce module',
     summary:
-      'A broad search and answer-engine toolkit covering structured data, social metadata, canonicals, hreflang, and AI discovery files.',
+      'A search and answer-engine foundation covering structured data, social metadata, canonicals, hreflang, and sitemaps, with separate FAQ, AEO, and Agentic companions.',
     howToUse:
       'Install the module, configure the required SEO features per store, then validate generated markup and crawler files.',
-    requirements: 'PHP 8.1–8.5; Mage-OS or Magento 2',
+    requirements: 'PHP 8.3–8.5; Magento 2.4.7+ or Mage-OS; Magento MSI inventory modules',
   },
   'module-shopping-feed': {
     title: 'Shopping Feed',
@@ -489,9 +523,9 @@ const curation = {
     title: 'Social Login',
     category: 'Security & access',
     kind: 'Customer module',
-    summary: 'Adds social sign-in options for Mage-OS and Magento customer accounts.',
+    summary: 'Adds Google, Facebook, LinkedIn, and Instagram sign-in for Mage-OS and Magento customer accounts.',
     howToUse: 'Install the module, configure supported identity providers, and test sign-in and account-linking flows.',
-    requirements: 'Mage-OS or Magento 2; identity-provider credentials',
+    requirements: 'PHP 8.1–8.5; Magento 2.4.6+ or Mage-OS 3.x; identity-provider credentials',
   },
   'module-store-locator': {
     title: 'Store Locator',
