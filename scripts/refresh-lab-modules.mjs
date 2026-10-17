@@ -10,6 +10,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ORGANISATION = 'mage-os-lab';
+const GRADUATED_ORGANISATION = 'mage-os';
 const rootDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = resolve(rootDirectory, 'src/data/lab-modules.json');
 const forceRefresh = process.argv.includes('--all');
@@ -27,7 +28,105 @@ const excludedRepositories = new Set([
   'zed-editor-extensions',
 ]);
 
+// This empty fixture is used to test packaging in CI, rather than being a
+// community module that has graduated from the Lab.
+const excludedGraduatedRepositories = new Set(['module-demo-package']);
+
 const curation = {
+  'module-admin-activity-log': {
+    title: 'Admin Activity Log',
+    category: 'Security & access',
+    kind: 'Admin module',
+    summary:
+      'Tracks admin changes, login attempts, and optional page visits, with before-and-after field values for auditing.',
+    howToUse:
+      'Configure Admin Activity under Stores → Configuration → Advanced → Admin, then review action and login logs under System → Admin Activity.',
+    requirements: 'PHP 8.2+; Magento Open Source 2.4.x or Mage-OS',
+    note: 'Continues the open-source KiwiCommerce Admin Activity extension; page-visit logging is optional.',
+  },
+  'module-automatic-translation': {
+    title: 'Automatic Translation',
+    category: 'AI & automation',
+    kind: 'Commerce module',
+    summary:
+      'Translates products, categories, CMS pages, and blocks using DeepL, OpenAI, or Google Gemini, with scheduled product translation.',
+    howToUse:
+      'Configure an engine, API credentials, and source and target languages for each store view, then translate content in the admin or schedule product translations.',
+    requirements: 'PHP 8.2–8.5; Mage-OS or Magento 2; supported translation-provider credentials',
+    note: 'Duplicate CMS pages and blocks before translation, because translated content replaces the original when saved.',
+  },
+  'module-inventory-reservations-grid': {
+    title: 'Inventory Reservations Grid',
+    category: 'Admin & operations',
+    kind: 'Admin module',
+    summary:
+      'Shows inventory reservations in the admin so store teams can inspect stock commitments and clean balanced reservations.',
+    howToUse:
+      'Open Stores → Inventory → Reservations to inspect reservations. Use role permissions and configuration to control cleanup and deletion actions.',
+    requirements: 'Mage-OS or Magento 2 with Multi-Source Inventory; Magento framework ^103.0',
+    note: 'Deleting uncompensated reservations can create stock inconsistencies; the mass-delete action is disabled by default.',
+  },
+  'module-meta-robots-tag': {
+    title: 'Meta Robots Tag',
+    category: 'SEO & discovery',
+    kind: 'Commerce module',
+    summary: 'Controls noindex, nofollow, and noarchive directives for individual products, categories, and CMS pages.',
+    howToUse:
+      'Enable the module, then set the required robot directives in the Search Engine Optimization section of each product, category, or CMS page.',
+    requirements: 'PHP 8.2–8.5; Mage-OS or Magento 2 with Catalog and CMS modules',
+    note: 'An unchecked directive uses the store design configuration; it does not explicitly force indexing or following.',
+  },
+  'module-page-builder-widget': {
+    title: 'Page Builder Widget',
+    category: 'Content & merchandising',
+    kind: 'Commerce module',
+    summary:
+      'Adds a draggable CMS Widget component to Page Builder, with configurable widgets and supported live stage previews.',
+    howToUse:
+      'Add the CMS Widget component in Page Builder and select a widget. Developers can add preview templates, styles, and scripts through widget.xml.',
+    requirements: 'PHP 8.1–8.5; Mage-OS or Magento 2; Page Builder ^2.0',
+  },
+  'module-pagebuilder-template-import-export': {
+    title: 'Page Builder Template Import / Export',
+    category: 'Content & merchandising',
+    kind: 'Commerce module',
+    summary:
+      'Shares Page Builder templates between stores as ZIP files, with optional remote template libraries in Dropbox.',
+    howToUse:
+      'Import or export templates under Content → Elements → Templates, or use the CLI. Configure Dropbox only if you need a remote template library.',
+    requirements: 'PHP 8.1–8.5; Mage-OS or Magento 2; Page Builder; PHP ZIP extension',
+  },
+  'module-rma': {
+    title: 'Returns & RMA',
+    category: 'Admin & operations',
+    kind: 'Commerce module',
+    summary:
+      'Manages return requests from customers and guests, with configurable reasons, statuses, attachments, messages, and admin workflows.',
+    howToUse:
+      'Enable Return Management under Stores → Configuration → Sales, configure your return policy, then manage requests under Sales → RMA.',
+    requirements: 'PHP 8.2–8.5; Mage-OS or Magento 2; Luma and Hyvä templates included',
+  },
+  'module-theme-adminhtml-switcher': {
+    title: 'Admin Theme Switcher',
+    category: 'Admin & operations',
+    kind: 'Admin module',
+    summary:
+      'Lets administrators choose the active admin theme and provides the companion switcher for the Mage-OS M137 admin theme.',
+    howToUse:
+      'Install through the M137 admin theme package or on its own, then choose an installed theme under Stores → Configuration → Advanced → Admin → Admin Design.',
+    requirements: 'PHP 8.2–8.5; Mage-OS or Magento 2; an installed admin theme',
+  },
+  'module-theme-optimization': {
+    title: 'Theme Optimization',
+    category: 'Performance & runtime',
+    kind: 'Frontend module',
+    summary:
+      'Speeds up perceived storefront navigation with browser back/forward caching, speculative loading, and page transitions.',
+    howToUse:
+      'Configure back/forward cache, speculation rules, and view transitions under Stores → Configuration → Advanced → System, then test with your theme and caching setup.',
+    requirements: 'PHP 8.1–8.5; Magento 2.4.5+ or equivalent Mage-OS / Adobe Commerce',
+    note: 'Back/forward cache support may require extra Varnish or Fastly configuration; prerendering can affect analytics and dynamic UI.',
+  },
   'agent-skills': {
     title: 'AI Agent Skills',
     category: 'Developer tools',
@@ -675,7 +774,33 @@ function readExistingCatalogue() {
   try {
     return JSON.parse(readFileSync(outputPath, 'utf8'));
   } catch {
-    return { modules: [] };
+    return { modules: [], graduatedModules: [] };
+  }
+}
+
+function repositoryOwner(repository) {
+  return repository.owner?.login ?? repository.organisation ?? ORGANISATION;
+}
+
+function readRepositories(organisation) {
+  return ghApi([`orgs/${organisation}/repos?per_page=100&type=public&sort=full_name`, '--paginate', '--slurp'])
+    .flat()
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function hasGraduatedFromLab(repository, existingGraduates) {
+  if (existingGraduates.has(repository.name)) return true;
+
+  try {
+    // GitHub keeps the old Lab URL working after a repository transfer. Check
+    // that redirect before presenting a main-organisation module as graduated.
+    const original = ghApi([`repos/${ORGANISATION}/${repository.name}`]);
+    return original.full_name?.toLowerCase() === repository.full_name.toLowerCase();
+  } catch (error) {
+    // A new main-organisation module may never have lived in the Lab. Other
+    // API failures must stop the refresh rather than silently hiding a module.
+    if (/HTTP 404/.test(String(error.stderr))) return false;
+    throw error;
   }
 }
 
@@ -698,8 +823,15 @@ function readRepositoryDetails(repository) {
     }
   `;
 
-  return ghApi(['graphql', '-f', `query=${query}`, '-F', `owner=${ORGANISATION}`, '-F', `name=${repository.name}`]).data
-    .repository;
+  return ghApi([
+    'graphql',
+    '-f',
+    `query=${query}`,
+    '-F',
+    `owner=${repositoryOwner(repository)}`,
+    '-F',
+    `name=${repository.name}`,
+  ]).data.repository;
 }
 
 function normaliseContributors(entries) {
@@ -717,12 +849,14 @@ function normaliseContributors(entries) {
 }
 
 function readContributors(repository) {
-  return normaliseContributors(ghApi([`repos/${ORGANISATION}/${repository.name}/contributors?per_page=100&anon=0`]));
+  return normaliseContributors(
+    ghApi([`repos/${repositoryOwner(repository)}/${repository.name}/contributors?per_page=100&anon=0`])
+  );
 }
 
-async function readPublicContributors(repositoryName) {
+async function readPublicContributors(module) {
   const response = await fetch(
-    `https://api.github.com/repos/${ORGANISATION}/${encodeURIComponent(repositoryName)}/contributors?per_page=100&anon=0`,
+    `https://api.github.com/repos/${repositoryOwner(module)}/${encodeURIComponent(module.repository)}/contributors?per_page=100&anon=0`,
     {
       headers: {
         Accept: 'application/vnd.github+json',
@@ -734,7 +868,7 @@ async function readPublicContributors(repositoryName) {
 
   if (response.status === 204) return [];
   if (!response.ok) {
-    throw new Error(`GitHub contributors request failed for ${repositoryName}: ${response.status}`);
+    throw new Error(`GitHub contributors request failed for ${module.repository}: ${response.status}`);
   }
 
   return normaliseContributors(await response.json());
@@ -809,6 +943,13 @@ function buildModule(repository, details, contributors) {
     repository: repository.name,
     url: repository.html_url,
     issuesUrl: `${repository.html_url}/issues`,
+    ...(repositoryOwner(repository) === GRADUATED_ORGANISATION
+      ? {
+          organisation: GRADUATED_ORGANISATION,
+          graduated: true,
+          graduatedFromUrl: `https://github.com/${ORGANISATION}/${repository.name}`,
+        }
+      : {}),
     summary: curated.summary ?? repository.description ?? 'A Mage-OS Lab project.',
     category: curated.category ?? 'Other',
     kind: curated.kind ?? 'Lab project',
@@ -841,49 +982,66 @@ function buildModule(repository, details, contributors) {
 if (contributorsOnly) {
   const existingCatalogue = readExistingCatalogue();
   const modules = [];
+  const graduatedModules = [];
 
-  for (const module of existingCatalogue.modules) {
-    const contributors = await readPublicContributors(module.repository);
-    modules.push({ ...module, contributors, dataCheckedAt: checkedAt });
-    console.log(`Contributors: ${module.repository} (${contributors.length})`);
+  for (const module of [...existingCatalogue.modules, ...(existingCatalogue.graduatedModules ?? [])]) {
+    const contributors = await readPublicContributors(module);
+    const target = module.graduated ? graduatedModules : modules;
+    target.push({ ...module, contributors, dataCheckedAt: checkedAt });
+    console.log(`Contributors: ${repositoryOwner(module)}/${module.repository} (${contributors.length})`);
   }
 
   const catalogue = {
     ...existingCatalogue,
-    schemaVersion: 2,
+    schemaVersion: 3,
     catalogueUpdatedAt: checkedAt,
     modules,
+    graduatedModules,
   };
 
   if (!dryRun) writeFileSync(outputPath, `${JSON.stringify(catalogue, null, 2)}\n`);
-  console.log(`Mage-OS Lab catalogue: contributor data refreshed for ${modules.length} projects.`);
+  console.log(
+    `Mage-OS Lab catalogue: contributor data refreshed for ${modules.length} Lab and ${graduatedModules.length} graduated projects.`
+  );
   if (dryRun) console.log('Dry run: no file written.');
 } else {
   const existingCatalogue = readExistingCatalogue();
-  const existingByRepository = new Map(existingCatalogue.modules.map((module) => [module.repository, module]));
-  const repositories = ghApi([`orgs/${ORGANISATION}/repos?per_page=100&type=public&sort=full_name`])
-    .filter((repository) => !excludedRepositories.has(repository.name) && !repository.fork)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const existingModules = [...existingCatalogue.modules, ...(existingCatalogue.graduatedModules ?? [])];
+  const existingByRepository = new Map(
+    existingModules.map((module) => [`${repositoryOwner(module)}/${module.repository}`.toLowerCase(), module])
+  );
+  const existingGraduates = new Set((existingCatalogue.graduatedModules ?? []).map((module) => module.repository));
+  const repositories = readRepositories(ORGANISATION).filter(
+    (repository) => !excludedRepositories.has(repository.name) && !repository.fork
+  );
+  const graduatedRepositories = readRepositories(GRADUATED_ORGANISATION).filter(
+    (repository) =>
+      repository.name.startsWith('module-') &&
+      !excludedGraduatedRepositories.has(repository.name) &&
+      hasGraduatedFromLab(repository, existingGraduates)
+  );
 
   const modules = [];
+  const graduatedModules = [];
   const refreshed = [];
   const unchanged = [];
 
-  for (const repository of repositories) {
-    const existing = existingByRepository.get(repository.name);
+  for (const repository of [...repositories, ...graduatedRepositories]) {
+    const target = repositoryOwner(repository) === GRADUATED_ORGANISATION ? graduatedModules : modules;
+    const existing = existingByRepository.get(`${repositoryOwner(repository)}/${repository.name}`.toLowerCase());
     if (!forceRefresh && existing?.sourceUpdatedAt === repository.pushed_at && Array.isArray(existing.contributors)) {
-      modules.push(existing);
-      unchanged.push(repository.name);
+      target.push(existing);
+      unchanged.push(`${repositoryOwner(repository)}/${repository.name}`);
       continue;
     }
 
     const details = readRepositoryDetails(repository);
-    modules.push(buildModule(repository, details, readContributors(repository)));
-    refreshed.push(repository.name);
+    target.push(buildModule(repository, details, readContributors(repository)));
+    refreshed.push(`${repositoryOwner(repository)}/${repository.name}`);
   }
 
   const catalogue = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     organisation: ORGANISATION,
     catalogueUpdatedAt: checkedAt,
     methodology: {
@@ -901,6 +1059,7 @@ if (contributorsOnly) {
         'Signals describe public repository readiness, not a security audit, support promise, or production certification.',
     },
     modules,
+    graduatedModules,
   };
 
   if (!dryRun) {
@@ -909,7 +1068,7 @@ if (contributorsOnly) {
   }
 
   console.log(
-    `Mage-OS Lab catalogue: ${modules.length} projects, ${refreshed.length} refreshed, ${unchanged.length} unchanged.`
+    `Mage-OS Lab catalogue: ${modules.length} Lab projects, ${graduatedModules.length} graduated projects, ${refreshed.length} refreshed, ${unchanged.length} unchanged.`
   );
   if (refreshed.length) console.log(`Refreshed: ${refreshed.join(', ')}`);
   if (dryRun) console.log('Dry run: no file written.');

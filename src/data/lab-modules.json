@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "organisation": "mage-os-lab",
-  "catalogueUpdatedAt": "2026-10-17T11:33:00.635Z",
+  "catalogueUpdatedAt": "2026-10-17T11:56:00.894Z",
   "methodology": {
     "label": "Repository quality signals",
     "totalSignals": 6,
@@ -3331,6 +3331,795 @@
           "release": false,
           "tests": false,
           "automation": false,
+          "recentActivity": true
+        }
+      }
+    }
+  ],
+  "graduatedModules": [
+    {
+      "slug": "module-admin-activity-log",
+      "title": "Admin Activity Log",
+      "repository": "module-admin-activity-log",
+      "url": "https://github.com/mage-os/module-admin-activity-log",
+      "issuesUrl": "https://github.com/mage-os/module-admin-activity-log/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-admin-activity-log",
+      "summary": "Tracks admin changes, login attempts, and optional page visits, with before-and-after field values for auditing.",
+      "category": "Security & access",
+      "kind": "Admin module",
+      "howToUse": "Configure Admin Activity under Stores → Configuration → Advanced → Admin, then review action and login logs under System → Admin Activity.",
+      "install": "composer require mage-os/module-admin-activity-log",
+      "requirements": "PHP 8.2+; Magento Open Source 2.4.x or Mage-OS",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": "Continues the open-source KiwiCommerce Admin Activity extension; page-visit logging is optional.",
+      "package": "mage-os/module-admin-activity-log",
+      "archived": false,
+      "sourceUpdatedAt": "2026-09-30T03:01:08Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "2.0.2",
+        "date": "2026-08-04T03:22:58Z"
+      },
+      "language": "PHP",
+      "license": null,
+      "stars": 29,
+      "forks": 11,
+      "openIssues": 1,
+      "defaultBranch": "main",
+      "commitCount": 157,
+      "contributors": [
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 101
+        },
+        {
+          "login": "kiwi-commerce",
+          "url": "https://github.com/kiwi-commerce",
+          "contributions": 26
+        },
+        {
+          "login": "lucafuser",
+          "url": "https://github.com/lucafuser",
+          "contributions": 5
+        },
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 3
+        },
+        {
+          "login": "marcelmtz",
+          "url": "https://github.com/marcelmtz",
+          "contributions": 2
+        },
+        {
+          "login": "peterjaap",
+          "url": "https://github.com/peterjaap",
+          "contributions": 2
+        },
+        {
+          "login": "avstudnitz",
+          "url": "https://github.com/avstudnitz",
+          "contributions": 1
+        },
+        {
+          "login": "XigenDominic",
+          "url": "https://github.com/XigenDominic",
+          "contributions": 1
+        },
+        {
+          "login": "ImanuelBertrand",
+          "url": "https://github.com/ImanuelBertrand",
+          "contributions": 1
+        },
+        {
+          "login": "magefan",
+          "url": "https://github.com/magefan",
+          "contributions": 1
+        },
+        {
+          "login": "marvincaspar",
+          "url": "https://github.com/marvincaspar",
+          "contributions": 1
+        },
+        {
+          "login": "melindash",
+          "url": "https://github.com/melindash",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 6,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": true,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-automatic-translation",
+      "title": "Automatic Translation",
+      "repository": "module-automatic-translation",
+      "url": "https://github.com/mage-os/module-automatic-translation",
+      "issuesUrl": "https://github.com/mage-os/module-automatic-translation/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-automatic-translation",
+      "summary": "Translates products, categories, CMS pages, and blocks using DeepL, OpenAI, or Google Gemini, with scheduled product translation.",
+      "category": "AI & automation",
+      "kind": "Commerce module",
+      "howToUse": "Configure an engine, API credentials, and source and target languages for each store view, then translate content in the admin or schedule product translations.",
+      "install": "composer require mage-os/module-automatic-translation",
+      "requirements": "PHP 8.2–8.5; Mage-OS or Magento 2; supported translation-provider credentials",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": "Duplicate CMS pages and blocks before translation, because translated content replaces the original when saved.",
+      "package": "mage-os/module-automatic-translation",
+      "archived": false,
+      "sourceUpdatedAt": "2026-10-16T15:42:16Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "2.4.0",
+        "date": "2026-10-16T15:42:17Z"
+      },
+      "language": "PHP",
+      "license": "MIT",
+      "stars": 33,
+      "forks": 16,
+      "openIssues": 7,
+      "defaultBranch": "main",
+      "commitCount": 106,
+      "contributors": [
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 58
+        },
+        {
+          "login": "dadolun95",
+          "url": "https://github.com/dadolun95",
+          "contributions": 20
+        },
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 7
+        },
+        {
+          "login": "Bashev",
+          "url": "https://github.com/Bashev",
+          "contributions": 3
+        },
+        {
+          "login": "boldbart",
+          "url": "https://github.com/boldbart",
+          "contributions": 2
+        },
+        {
+          "login": "Girg-Z",
+          "url": "https://github.com/Girg-Z",
+          "contributions": 2
+        },
+        {
+          "login": "rikwillems",
+          "url": "https://github.com/rikwillems",
+          "contributions": 2
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 2
+        },
+        {
+          "login": "WaPoNe",
+          "url": "https://github.com/WaPoNe",
+          "contributions": 2
+        },
+        {
+          "login": "Blumm",
+          "url": "https://github.com/Blumm",
+          "contributions": 1
+        },
+        {
+          "login": "peterjaap",
+          "url": "https://github.com/peterjaap",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 6,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": true,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-inventory-reservations-grid",
+      "title": "Inventory Reservations Grid",
+      "repository": "module-inventory-reservations-grid",
+      "url": "https://github.com/mage-os/module-inventory-reservations-grid",
+      "issuesUrl": "https://github.com/mage-os/module-inventory-reservations-grid/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-inventory-reservations-grid",
+      "summary": "Shows inventory reservations in the admin so store teams can inspect stock commitments and clean balanced reservations.",
+      "category": "Admin & operations",
+      "kind": "Admin module",
+      "howToUse": "Open Stores → Inventory → Reservations to inspect reservations. Use role permissions and configuration to control cleanup and deletion actions.",
+      "install": "composer require mage-os/module-inventory-reservations-grid",
+      "requirements": "Mage-OS or Magento 2 with Multi-Source Inventory; Magento framework ^103.0",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": "Deleting uncompensated reservations can create stock inconsistencies; the mass-delete action is disabled by default.",
+      "package": "mage-os/module-inventory-reservations-grid",
+      "archived": false,
+      "sourceUpdatedAt": "2026-08-10T13:35:13Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "1.0.5",
+        "date": "2026-05-09T03:32:25Z"
+      },
+      "language": "PHP",
+      "license": "MIT",
+      "stars": 15,
+      "forks": 6,
+      "openIssues": 0,
+      "defaultBranch": "main",
+      "commitCount": 19,
+      "contributors": [
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 6
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 3
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 2
+        },
+        {
+          "login": "sprankhub",
+          "url": "https://github.com/sprankhub",
+          "contributions": 2
+        },
+        {
+          "login": "antoniocarboni",
+          "url": "https://github.com/antoniocarboni",
+          "contributions": 1
+        },
+        {
+          "login": "fballiano",
+          "url": "https://github.com/fballiano",
+          "contributions": 1
+        },
+        {
+          "login": "ProxiBlue",
+          "url": "https://github.com/ProxiBlue",
+          "contributions": 1
+        },
+        {
+          "login": "melindash",
+          "url": "https://github.com/melindash",
+          "contributions": 1
+        },
+        {
+          "login": "thomas-kl1",
+          "url": "https://github.com/thomas-kl1",
+          "contributions": 1
+        },
+        {
+          "login": "davidtabat",
+          "url": "https://github.com/davidtabat",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": false,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-meta-robots-tag",
+      "title": "Meta Robots Tag",
+      "repository": "module-meta-robots-tag",
+      "url": "https://github.com/mage-os/module-meta-robots-tag",
+      "issuesUrl": "https://github.com/mage-os/module-meta-robots-tag/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-meta-robots-tag",
+      "summary": "Controls noindex, nofollow, and noarchive directives for individual products, categories, and CMS pages.",
+      "category": "SEO & discovery",
+      "kind": "Commerce module",
+      "howToUse": "Enable the module, then set the required robot directives in the Search Engine Optimization section of each product, category, or CMS page.",
+      "install": "composer require mage-os/module-meta-robots-tag",
+      "requirements": "PHP 8.2–8.5; Mage-OS or Magento 2 with Catalog and CMS modules",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": "An unchecked directive uses the store design configuration; it does not explicitly force indexing or following.",
+      "package": "mage-os/module-meta-robots-tag",
+      "archived": false,
+      "sourceUpdatedAt": "2026-08-10T13:35:30Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "1.2.1",
+        "date": "2026-05-01T02:43:14Z"
+      },
+      "language": "PHP",
+      "license": "MIT",
+      "stars": 12,
+      "forks": 3,
+      "openIssues": 2,
+      "defaultBranch": "main",
+      "commitCount": 13,
+      "contributors": [
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 6
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 5
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 2
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": false,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-page-builder-widget",
+      "title": "Page Builder Widget",
+      "repository": "module-page-builder-widget",
+      "url": "https://github.com/mage-os/module-page-builder-widget",
+      "issuesUrl": "https://github.com/mage-os/module-page-builder-widget/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-page-builder-widget",
+      "summary": "Adds a draggable CMS Widget component to Page Builder, with configurable widgets and supported live stage previews.",
+      "category": "Content & merchandising",
+      "kind": "Commerce module",
+      "howToUse": "Add the CMS Widget component in Page Builder and select a widget. Developers can add preview templates, styles, and scripts through widget.xml.",
+      "install": "composer require mage-os/module-page-builder-widget",
+      "requirements": "PHP 8.1–8.5; Mage-OS or Magento 2; Page Builder ^2.0",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-page-builder-widget",
+      "archived": false,
+      "sourceUpdatedAt": "2026-08-10T13:34:25Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "1.5.0",
+        "date": "2026-05-15T00:45:13Z"
+      },
+      "language": "HTML",
+      "license": "MIT",
+      "stars": 30,
+      "forks": 10,
+      "openIssues": 7,
+      "defaultBranch": "master",
+      "commitCount": 46,
+      "contributors": [
+        {
+          "login": "dadolun95",
+          "url": "https://github.com/dadolun95",
+          "contributions": 26
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 7
+        },
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 6
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 4
+        },
+        {
+          "login": "melindash",
+          "url": "https://github.com/melindash",
+          "contributions": 1
+        },
+        {
+          "login": "codingkoaladev",
+          "url": "https://github.com/codingkoaladev",
+          "contributions": 1
+        },
+        {
+          "login": "yuriy-boyko",
+          "url": "https://github.com/yuriy-boyko",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": false,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-pagebuilder-template-import-export",
+      "title": "Page Builder Template Import / Export",
+      "repository": "module-pagebuilder-template-import-export",
+      "url": "https://github.com/mage-os/module-pagebuilder-template-import-export",
+      "issuesUrl": "https://github.com/mage-os/module-pagebuilder-template-import-export/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-pagebuilder-template-import-export",
+      "summary": "Shares Page Builder templates between stores as ZIP files, with optional remote template libraries in Dropbox.",
+      "category": "Content & merchandising",
+      "kind": "Commerce module",
+      "howToUse": "Import or export templates under Content → Elements → Templates, or use the CLI. Configure Dropbox only if you need a remote template library.",
+      "install": "composer require mage-os/module-page-builder-template-import-export",
+      "requirements": "PHP 8.1–8.5; Mage-OS or Magento 2; Page Builder; PHP ZIP extension",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-page-builder-template-import-export",
+      "archived": false,
+      "sourceUpdatedAt": "2026-08-10T13:35:39Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "1.9.0",
+        "date": "2026-08-05T18:16:20Z"
+      },
+      "language": "PHP",
+      "license": "MIT",
+      "stars": 20,
+      "forks": 6,
+      "openIssues": 5,
+      "defaultBranch": "master",
+      "commitCount": 82,
+      "contributors": [
+        {
+          "login": "dadolun95",
+          "url": "https://github.com/dadolun95",
+          "contributions": 53
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 8
+        },
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 6
+        },
+        {
+          "login": "lucafuser",
+          "url": "https://github.com/lucafuser",
+          "contributions": 5
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 3
+        },
+        {
+          "login": "marcelmtz",
+          "url": "https://github.com/marcelmtz",
+          "contributions": 2
+        }
+      ],
+      "quality": {
+        "score": 6,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": true,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-rma",
+      "title": "Returns & RMA",
+      "repository": "module-rma",
+      "url": "https://github.com/mage-os/module-rma",
+      "issuesUrl": "https://github.com/mage-os/module-rma/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-rma",
+      "summary": "Manages return requests from customers and guests, with configurable reasons, statuses, attachments, messages, and admin workflows.",
+      "category": "Admin & operations",
+      "kind": "Commerce module",
+      "howToUse": "Enable Return Management under Stores → Configuration → Sales, configure your return policy, then manage requests under Sales → RMA.",
+      "install": "composer require mage-os/module-rma",
+      "requirements": "PHP 8.2–8.5; Mage-OS or Magento 2; Luma and Hyvä templates included",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-rma",
+      "archived": false,
+      "sourceUpdatedAt": "2026-10-02T07:35:29Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "2.5.0",
+        "date": "2026-10-02T07:32:48Z"
+      },
+      "language": "PHP",
+      "license": "MIT",
+      "stars": 22,
+      "forks": 12,
+      "openIssues": 10,
+      "defaultBranch": "main",
+      "commitCount": 67,
+      "contributors": [
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 44
+        },
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 4
+        },
+        {
+          "login": "Hawksama",
+          "url": "https://github.com/Hawksama",
+          "contributions": 3
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 3
+        },
+        {
+          "login": "norgeindian",
+          "url": "https://github.com/norgeindian",
+          "contributions": 2
+        },
+        {
+          "login": "yuriy-boyko",
+          "url": "https://github.com/yuriy-boyko",
+          "contributions": 2
+        },
+        {
+          "login": "stollr",
+          "url": "https://github.com/stollr",
+          "contributions": 1
+        },
+        {
+          "login": "marcelmtz",
+          "url": "https://github.com/marcelmtz",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 6,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": true,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-theme-adminhtml-switcher",
+      "title": "Admin Theme Switcher",
+      "repository": "module-theme-adminhtml-switcher",
+      "url": "https://github.com/mage-os/module-theme-adminhtml-switcher",
+      "issuesUrl": "https://github.com/mage-os/module-theme-adminhtml-switcher/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-theme-adminhtml-switcher",
+      "summary": "Lets administrators choose the active admin theme and provides the companion switcher for the Mage-OS M137 admin theme.",
+      "category": "Admin & operations",
+      "kind": "Admin module",
+      "howToUse": "Install through the M137 admin theme package or on its own, then choose an installed theme under Stores → Configuration → Advanced → Admin → Admin Design.",
+      "install": "composer require mage-os/module-theme-adminhtml-switcher",
+      "requirements": "PHP 8.2–8.5; Mage-OS or Magento 2; an installed admin theme",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": null,
+      "package": "mage-os/module-theme-adminhtml-switcher",
+      "archived": false,
+      "sourceUpdatedAt": "2026-08-10T13:36:30Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "1.2.1",
+        "date": "2026-05-01T02:30:12Z"
+      },
+      "language": "PHP",
+      "license": "MIT",
+      "stars": 6,
+      "forks": 10,
+      "openIssues": 0,
+      "defaultBranch": "main",
+      "commitCount": 19,
+      "contributors": [
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 6
+        },
+        {
+          "login": "artKozynets",
+          "url": "https://github.com/artKozynets",
+          "contributions": 3
+        },
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 3
+        },
+        {
+          "login": "johnhughes1984",
+          "url": "https://github.com/johnhughes1984",
+          "contributions": 2
+        },
+        {
+          "login": "davidtabat",
+          "url": "https://github.com/davidtabat",
+          "contributions": 2
+        },
+        {
+          "login": "ProxiBlue",
+          "url": "https://github.com/ProxiBlue",
+          "contributions": 1
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 1
+        },
+        {
+          "login": "sprankhub",
+          "url": "https://github.com/sprankhub",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 5,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": false,
+          "automation": true,
+          "recentActivity": true
+        }
+      }
+    },
+    {
+      "slug": "module-theme-optimization",
+      "title": "Theme Optimization",
+      "repository": "module-theme-optimization",
+      "url": "https://github.com/mage-os/module-theme-optimization",
+      "issuesUrl": "https://github.com/mage-os/module-theme-optimization/issues",
+      "organisation": "mage-os",
+      "graduated": true,
+      "graduatedFromUrl": "https://github.com/mage-os-lab/module-theme-optimization",
+      "summary": "Speeds up perceived storefront navigation with browser back/forward caching, speculative loading, and page transitions.",
+      "category": "Performance & runtime",
+      "kind": "Frontend module",
+      "howToUse": "Configure back/forward cache, speculation rules, and view transitions under Stores → Configuration → Advanced → System, then test with your theme and caching setup.",
+      "install": "composer require mage-os/module-theme-optimization",
+      "requirements": "PHP 8.1–8.5; Magento 2.4.5+ or equivalent Mage-OS / Adobe Commerce",
+      "compatibility": "Check the package constraints and README against your store version before installing.",
+      "caveat": "Back/forward cache support may require extra Varnish or Fastly configuration; prerendering can affect analytics and dynamic UI.",
+      "package": "mage-os/module-theme-optimization",
+      "archived": false,
+      "sourceUpdatedAt": "2026-08-10T13:35:56Z",
+      "dataCheckedAt": "2026-10-17T11:56:00.894Z",
+      "latestRelease": {
+        "tag": "2.3.0",
+        "date": "2026-05-12T01:41:27Z"
+      },
+      "language": "PHP",
+      "license": "OSL-3.0",
+      "stars": 41,
+      "forks": 9,
+      "openIssues": 7,
+      "defaultBranch": "main",
+      "commitCount": 38,
+      "contributors": [
+        {
+          "login": "rhoerr",
+          "url": "https://github.com/rhoerr",
+          "contributions": 20
+        },
+        {
+          "login": "mage-os-ci",
+          "url": "https://github.com/mage-os-ci",
+          "contributions": 7
+        },
+        {
+          "login": "GrimLink",
+          "url": "https://github.com/GrimLink",
+          "contributions": 5
+        },
+        {
+          "login": "JaJuMa",
+          "url": "https://github.com/JaJuMa",
+          "contributions": 4
+        },
+        {
+          "login": "5mehulhelp5",
+          "url": "https://github.com/5mehulhelp5",
+          "contributions": 1
+        },
+        {
+          "login": "SamueleMartini",
+          "url": "https://github.com/SamueleMartini",
+          "contributions": 1
+        }
+      ],
+      "quality": {
+        "score": 6,
+        "total": 6,
+        "label": "Strong signals",
+        "signals": {
+          "documentation": true,
+          "installable": true,
+          "release": true,
+          "tests": true,
+          "automation": true,
           "recentActivity": true
         }
       }
