@@ -194,7 +194,7 @@ const curation = {
     howToUse:
       'Run mage-os-install in the directory where you want a project and follow the environment and admin setup prompts.',
     requirements: 'Docker plus DDEV or Warden',
-    install: 'Download a release binary, or run: go install github.com/mage-os-lab/mage-os-installer@latest',
+    install: 'Download the latest release binary from https://github.com/mage-os/mage-os-installer/releases/latest',
   },
   'magento2-lsp': {
     title: 'Magento 2 LSP & MCP',
@@ -237,7 +237,18 @@ const curation = {
       'Back up and test on staging, review the migration script, then run the command documented in the repository.',
     requirements: 'Magento Open Source 2.4.9; developer mode; local or staging environment; shell access',
     install:
-      'bash <(curl -s https://raw.githubusercontent.com/mage-os-lab/migrate-m2-to-mageos/refs/heads/main/migrate-to-mage-os.sh)',
+      'bash <(curl -s https://raw.githubusercontent.com/mage-os/migrate-m2-to-mageos/refs/heads/main/migrate-to-mage-os.sh)',
+  },
+  'module-accessibility-audit': {
+    title: 'Accessibility Audit',
+    category: 'Developer tools',
+    kind: 'Developer concept',
+    summary: 'A reserved Lab project for accessibility auditing in Mage-OS and Magento.',
+    howToUse: 'Not installable yet; follow the repository as the initial scope is defined.',
+    requirements: 'Not yet documented',
+    install: 'Not installable yet',
+    status: 'Incubating',
+    note: 'The repository was created recently and does not yet contain an implementation.',
   },
   'module-admin-assistant': {
     title: 'Admin Assistant',
@@ -311,7 +322,7 @@ const curation = {
     kind: 'Frontend module',
     summary: 'An early proof of concept for initializing Alpine.js in a Mage-OS storefront.',
     howToUse: 'Evaluate from source in a development store; the public API and feature set are still being defined.',
-    requirements: 'PHP 8.1+; Mage-OS or Magento 2',
+    requirements: 'PHP 8.2–8.5; Mage-OS or Magento 2',
     status: 'Experimental',
     note: 'The README labels this as a proof of concept and does not yet document finished features.',
   },
@@ -458,6 +469,17 @@ const curation = {
       'Create and organise FAQs in the admin, publish them in the storefront, and validate the generated schema.',
     requirements: 'PHP 8.3–8.5; Magento 2.4.7+ or Mage-OS; SEO ^2.0; optional Page Builder',
   },
+  'module-google-tracking': {
+    title: 'Google Tracking',
+    category: 'SEO & discovery',
+    kind: 'Commerce concept',
+    summary: 'A reserved Lab project for Google tracking in Mage-OS and Magento.',
+    howToUse: 'Not installable yet; follow the repository as the initial scope is defined.',
+    requirements: 'Not yet documented',
+    install: 'Not installable yet',
+    status: 'Incubating',
+    note: 'The repository was created recently and does not yet contain an implementation.',
+  },
   'module-hreflang': {
     title: 'Hreflang',
     category: 'SEO & discovery',
@@ -560,6 +582,17 @@ const curation = {
     howToUse:
       'Install the module and request Page Builder content through its GraphQL fields instead of consuming rendered HTML.',
     requirements: 'Mage-OS or Magento 2 with Page Builder and GraphQL',
+  },
+  'module-page-builder-improved': {
+    title: 'Page Builder Improved',
+    category: 'Content & merchandising',
+    kind: 'Commerce concept',
+    summary: 'A reserved Lab project for improving Page Builder in Mage-OS and Magento.',
+    howToUse: 'Not installable yet; follow the repository as the initial scope is defined.',
+    requirements: 'Not yet documented',
+    install: 'Not installable yet',
+    status: 'Incubating',
+    note: 'The repository was created recently and does not yet contain an implementation.',
   },
   'module-passkey-auth': {
     title: 'Passkey Authentication',
@@ -729,6 +762,17 @@ const curation = {
     install: 'Apply lazyObjectsPatch.patch with cweagans/composer-patches',
     status: 'Experimental',
     note: 'The maintainers describe this as experimental and not yet battle-tested in production.',
+  },
+  'theme-accessible-blank': {
+    title: 'Accessible Blank Theme',
+    category: 'Developer tools',
+    kind: 'Theme concept',
+    summary: 'A reserved Lab project for an accessibility-focused blank storefront theme.',
+    howToUse: 'Not installable yet; follow the repository as the initial scope is defined.',
+    requirements: 'Not yet documented',
+    install: 'Not installable yet',
+    status: 'Incubating',
+    note: 'The repository was created recently and does not yet contain an implementation.',
   },
   'theme-frontend-uikit': {
     title: 'UIkit Frontend Theme',
@@ -1011,12 +1055,16 @@ if (contributorsOnly) {
     existingModules.map((module) => [`${repositoryOwner(module)}/${module.repository}`.toLowerCase(), module])
   );
   const existingGraduates = new Set((existingCatalogue.graduatedModules ?? []).map((module) => module.repository));
+  const cataloguedRepositories = new Set(existingModules.map((module) => module.repository));
   const repositories = readRepositories(ORGANISATION).filter(
     (repository) => !excludedRepositories.has(repository.name) && !repository.fork
   );
+  // Most of the main organisation is unrelated to the Lab, so only check modules
+  // and projects already in the catalogue. Without the catalogue check, a tool
+  // or library transferred out of the Lab would silently leave the catalogue.
   const graduatedRepositories = readRepositories(GRADUATED_ORGANISATION).filter(
     (repository) =>
-      repository.name.startsWith('module-') &&
+      (repository.name.startsWith('module-') || cataloguedRepositories.has(repository.name)) &&
       !excludedGraduatedRepositories.has(repository.name) &&
       hasGraduatedFromLab(repository, existingGraduates)
   );

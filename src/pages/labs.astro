@@ -12,7 +12,10 @@ const metadata = {
     'Find Mage-OS Lab projects and graduated modules with plain-language descriptions, installation guidance, compatibility details, and project activity.',
 };
 
-type Project = (typeof catalogue.modules)[number] & { graduated?: boolean; organisation?: string };
+type Project = ((typeof catalogue.modules)[number] | (typeof catalogue.graduatedModules)[number]) & {
+  graduated?: boolean;
+  organisation?: string;
+};
 const modules: Project[] = [...catalogue.modules, ...catalogue.graduatedModules].sort(
   (first, second) =>
     Number(first.archived) - Number(second.archived) ||
