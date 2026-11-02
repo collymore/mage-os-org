@@ -1,11 +1,21 @@
 #!/usr/bin/env node
 
-// Refreshes the Mage-OS Lab catalogue. Repository metadata is fetched first;
-// unchanged projects retain their existing enriched data so later runs only
-// inspect repositories that have actually received a new push.
+// Refreshes the Mage-OS Lab catalogue, the site's only source of GitHub data. The
+// pages and the README viewer read the files written here, never GitHub itself.
+//
+// Every run reads repository metadata and GraphQL details for all projects, so
+// stars, releases, and signals cannot go stale. Contributors and READMEs are
+// reused until the default branch moves, because only a commit changes them.
+// All requests go through the authenticated gh CLI, and a run that finds no
+// changes writes nothing, so a scheduled run only produces a real diff.
+//
+//   --all                 Refetch contributors and READMEs for every project.
+//   --contributors-only   Refetch contributors and leave everything else alone.
+//   --dry-run             Report what would happen without writing any files.
+//   --accept-shrink       Allow an intended drop of more than a fifth of projects.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,11 +23,17 @@ const ORGANISATION = 'mage-os-lab';
 const GRADUATED_ORGANISATION = 'mage-os';
 const rootDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = resolve(rootDirectory, 'src/data/lab-modules.json');
+const readmeDirectory = resolve(rootDirectory, 'public/data/lab-readmes');
 const forceRefresh = process.argv.includes('--all');
 const dryRun = process.argv.includes('--dry-run');
 const contributorsOnly = process.argv.includes('--contributors-only');
 const acceptShrink = process.argv.includes('--accept-shrink');
 const REQUEST_TIMEOUT_MS = 60_000;
+const REQUEST_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 5_000;
+// GitHub abandons a GraphQL query after ten seconds. Batches of 20 took up to
+// that long, while batches of 10 stay well inside the limit.
+const GRAPHQL_BATCH_SIZE = 10;
 const SHRINK_TOLERANCE = 0.8;
 const checkedAt = new Date().toISOString();
 const recentCutoff = new Date(checkedAt);
@@ -810,18 +826,38 @@ const curation = {
   },
 };
 
+function sleepSync(milliseconds) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
+}
+
+// A scheduled run should survive a dropped connection or a GitHub timeout. An
+// HTTP 4xx answer is final, and callers rely on seeing a 404 straight away.
+function ghRequest(arguments_) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return execFileSync('gh', ['api', ...arguments_], {
+        cwd: rootDirectory,
+        encoding: 'utf8',
+        maxBuffer: 50 * 1024 * 1024,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        timeout: REQUEST_TIMEOUT_MS,
+      });
+    } catch (error) {
+      if (attempt === REQUEST_ATTEMPTS || /HTTP 4\d\d/.test(String(error.stderr))) throw error;
+
+      console.warn(`Retrying a failed GitHub request: ${String(error.stderr).trim() || error.message}`);
+      sleepSync(RETRY_DELAY_MS * attempt);
+    }
+  }
+}
+
 // GitHub answers 204 No Content with an empty body on some collection
 // endpoints, so a caller that expects a list passes `emptyAs: []`. Every other
 // caller treats an empty body as a failure rather than as an empty result,
 // because an empty body on a single-object endpoint means the request did not
 // return what was asked for.
 function ghApi(arguments_, { emptyAs } = {}) {
-  const response = execFileSync('gh', ['api', ...arguments_], {
-    cwd: rootDirectory,
-    encoding: 'utf8',
-    maxBuffer: 50 * 1024 * 1024,
-    timeout: REQUEST_TIMEOUT_MS,
-  });
+  const response = ghRequest(arguments_);
 
   if (!response.trim()) {
     if (emptyAs !== undefined) return emptyAs;
@@ -888,47 +924,56 @@ function hasGraduatedFromLab(repository, existingGraduates) {
   }
 }
 
-function readRepositoryDetails(repository) {
-  const query = `
-    query RepositoryDetails($owner: String!, $name: String!) {
-      repository(owner: $owner, name: $name) {
-        defaultBranchRef {
-          name
-          target { ... on Commit { history { totalCount } } }
-        }
-        latestRelease { tagName publishedAt }
-        readme: object(expression: "HEAD:README.md") { ... on Blob { text } }
-        composer: object(expression: "HEAD:composer.json") { ... on Blob { text } }
-        package: object(expression: "HEAD:package.json") { ... on Blob { text } }
-        workflows: object(expression: "HEAD:.github/workflows") { ... on Tree { entries { name } } }
-        testsUpper: object(expression: "HEAD:Test") { ... on Tree { entries { name } } }
-        testsLower: object(expression: "HEAD:tests") { ... on Tree { entries { name } } }
-        testsDev: object(expression: "HEAD:dev/tests") { ... on Tree { entries { name } } }
-      }
+const repositoryDetailsFragment = `
+  fragment RepositoryDetails on Repository {
+    defaultBranchRef {
+      name
+      target { oid ... on Commit { history { totalCount } } }
     }
-  `;
-
-  const response = ghApi([
-    'graphql',
-    '-f',
-    `query=${query}`,
-    '-F',
-    `owner=${repositoryOwner(repository)}`,
-    '-F',
-    `name=${repository.name}`,
-  ]);
-
-  // GraphQL can answer with both data and per-field errors at exit code zero. A
-  // timed-out readme field would otherwise be recorded as a missing readme and
-  // lower the published quality score.
-  if (response.errors?.length) {
-    const messages = response.errors.map((entry) => entry.message).join('; ');
-    throw new Error(`GitHub GraphQL errors for ${repository.full_name}: ${messages}`);
+    latestRelease { tagName publishedAt }
+    readme: object(expression: "HEAD:README.md") { ... on Blob { text } }
+    composer: object(expression: "HEAD:composer.json") { ... on Blob { text } }
+    package: object(expression: "HEAD:package.json") { ... on Blob { text } }
+    workflows: object(expression: "HEAD:.github/workflows") { ... on Tree { entries { name } } }
+    testsUpper: object(expression: "HEAD:Test") { ... on Tree { entries { name } } }
+    testsLower: object(expression: "HEAD:tests") { ... on Tree { entries { name } } }
+    testsDev: object(expression: "HEAD:dev/tests") { ... on Tree { entries { name } } }
   }
+`;
 
-  const details = response.data?.repository;
-  if (!details) {
-    throw new Error(`GitHub GraphQL returned no repository for ${repository.full_name}.`);
+// Aliases fetch a whole batch in one request, so every project can be read on
+// every run for a handful of requests rather than one per project.
+function readRepositoryDetails(repositories) {
+  const details = new Map();
+
+  for (let start = 0; start < repositories.length; start += GRAPHQL_BATCH_SIZE) {
+    const batch = repositories.slice(start, start + GRAPHQL_BATCH_SIZE);
+    const fields = batch.map((repository, index) => {
+      const owner = JSON.stringify(repositoryOwner(repository));
+      return `repository${index}: repository(owner: ${owner}, name: ${JSON.stringify(repository.name)}) { ...RepositoryDetails }`;
+    });
+    const response = ghApi([
+      'graphql',
+      '-f',
+      `query=query RepositoryDetailsBatch { ${fields.join(' ')} } ${repositoryDetailsFragment}`,
+    ]);
+
+    // GraphQL can answer with both data and per-field errors at exit code zero. A
+    // timed-out readme field would otherwise be recorded as a missing readme and
+    // lower the published quality score.
+    if (response.errors?.length) {
+      const messages = response.errors.map((entry) => entry.message).join('; ');
+      throw new Error(`GitHub GraphQL errors for ${batch.map(({ full_name }) => full_name).join(', ')}: ${messages}`);
+    }
+
+    batch.forEach((repository, index) => {
+      const repositoryDetails = response.data?.[`repository${index}`];
+      if (!repositoryDetails) {
+        throw new Error(`GitHub GraphQL returned no repository for ${repository.full_name}.`);
+      }
+
+      details.set(repository.full_name, repositoryDetails);
+    });
   }
 
   return details;
@@ -956,24 +1001,23 @@ function readContributors(repository) {
   );
 }
 
-async function readPublicContributors(module) {
-  const response = await fetch(
-    `https://api.github.com/repos/${repositoryOwner(module)}/${encodeURIComponent(module.repository)}/contributors?per_page=100&anon=0`,
-    {
-      headers: {
-        Accept: 'application/vnd.github+json',
-        'User-Agent': 'mage-os-lab-catalogue',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    }
-  );
+function readmePath(slug) {
+  return resolve(readmeDirectory, `${slug}.json`);
+}
 
-  if (response.status === 204) return [];
-  if (!response.ok) {
-    throw new Error(`GitHub contributors request failed for ${module.repository}: ${response.status}`);
+function readReadme(repository, branch) {
+  const path = `repos/${repositoryOwner(repository)}/${repository.name}/readme?ref=${encodeURIComponent(branch)}`;
+
+  try {
+    const html = ghRequest(['-H', 'Accept: application/vnd.github.html+json', path]);
+    if (!html.trim()) throw new Error(`GitHub returned an empty README for ${path}`);
+    return html;
+  } catch (error) {
+    // Not every repository has a README. Any other failure stops the refresh
+    // rather than replacing a published README with nothing.
+    if (/HTTP 404/.test(String(error.stderr))) return null;
+    throw error;
   }
-
-  return normaliseContributors(await response.json());
 }
 
 function parseJson(text) {
@@ -1074,6 +1118,7 @@ function buildModule(repository, details, contributors) {
     package: composerName ?? npmName,
     archived: repository.archived,
     sourceUpdatedAt: repository.pushed_at,
+    sourceCommit: details.defaultBranchRef?.target?.oid ?? null,
     dataCheckedAt: checkedAt,
     latestRelease,
     language: repository.language ?? null,
@@ -1089,13 +1134,55 @@ function buildModule(repository, details, contributors) {
   };
 }
 
+function withoutTimestamps(catalogue) {
+  return JSON.stringify(catalogue, (key, value) =>
+    key === 'catalogueUpdatedAt' || key === 'dataCheckedAt' ? undefined : value
+  );
+}
+
+function writeReadmes(readmes, catalogue) {
+  mkdirSync(readmeDirectory, { recursive: true });
+
+  for (const [slug, readme] of readmes) {
+    writeFileSync(readmePath(slug), `${JSON.stringify(readme, null, 2)}\n`);
+  }
+
+  // A project that leaves the catalogue must not leave its README published.
+  const slugs = new Set([...catalogue.modules, ...catalogue.graduatedModules].map((module) => module.slug));
+  for (const file of readdirSync(readmeDirectory)) {
+    if (!slugs.has(file.replace(/\.json$/, ''))) rmSync(resolve(readmeDirectory, file));
+  }
+}
+
+function publish(existingCatalogue, catalogue, readmes = new Map()) {
+  assertCatalogueIsComplete(existingCatalogue, catalogue.modules, catalogue.graduatedModules);
+
+  if (dryRun) {
+    console.log('Dry run: no file written.');
+    return;
+  }
+
+  // READMEs go first, so an interrupted run leaves the catalogue pointing at the
+  // old commit and the next run fetches them again.
+  writeReadmes(readmes, catalogue);
+
+  if (withoutTimestamps(catalogue) === withoutTimestamps(existingCatalogue)) {
+    console.log('No data changed: the catalogue was left as it was.');
+    return;
+  }
+
+  mkdirSync(dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, `${JSON.stringify(catalogue, null, 2)}\n`);
+  console.log('Catalogue updated.');
+}
+
 if (contributorsOnly) {
   const existingCatalogue = readExistingCatalogue();
   const modules = [];
   const graduatedModules = [];
 
   for (const module of [...existingCatalogue.modules, ...(existingCatalogue.graduatedModules ?? [])]) {
-    const contributors = await readPublicContributors(module);
+    const contributors = readContributors({ ...module, name: module.repository });
     const target = module.graduated ? graduatedModules : modules;
     target.push({ ...module, contributors, dataCheckedAt: checkedAt });
     console.log(`Contributors: ${repositoryOwner(module)}/${module.repository} (${contributors.length})`);
@@ -1103,19 +1190,16 @@ if (contributorsOnly) {
 
   const catalogue = {
     ...existingCatalogue,
-    schemaVersion: 3,
+    schemaVersion: 4,
     catalogueUpdatedAt: checkedAt,
     modules,
     graduatedModules,
   };
 
-  assertCatalogueIsComplete(existingCatalogue, modules, graduatedModules);
-
-  if (!dryRun) writeFileSync(outputPath, `${JSON.stringify(catalogue, null, 2)}\n`);
   console.log(
     `Mage-OS Lab catalogue: contributor data refreshed for ${modules.length} Lab and ${graduatedModules.length} graduated projects.`
   );
-  if (dryRun) console.log('Dry run: no file written.');
+  publish(existingCatalogue, catalogue);
 } else {
   const existingCatalogue = readExistingCatalogue();
   const existingModules = [...existingCatalogue.modules, ...(existingCatalogue.graduatedModules ?? [])];
@@ -1137,27 +1221,44 @@ if (contributorsOnly) {
       hasGraduatedFromLab(repository, existingGraduates)
   );
 
+  const allRepositories = [...repositories, ...graduatedRepositories];
+  const details = readRepositoryDetails(allRepositories);
   const modules = [];
   const graduatedModules = [];
+  const readmes = new Map();
   const refreshed = [];
-  const unchanged = [];
+  const reused = [];
 
-  for (const repository of [...repositories, ...graduatedRepositories]) {
+  for (const repository of allRepositories) {
+    const fullName = `${repositoryOwner(repository)}/${repository.name}`;
     const target = repositoryOwner(repository) === GRADUATED_ORGANISATION ? graduatedModules : modules;
-    const existing = existingByRepository.get(`${repositoryOwner(repository)}/${repository.name}`.toLowerCase());
-    if (!forceRefresh && existing?.sourceUpdatedAt === repository.pushed_at && Array.isArray(existing.contributors)) {
-      target.push(existing);
-      unchanged.push(`${repositoryOwner(repository)}/${repository.name}`);
+    const existing = existingByRepository.get(fullName.toLowerCase());
+    const repositoryDetails = details.get(repository.full_name);
+    const sourceCommit = repositoryDetails.defaultBranchRef?.target?.oid ?? null;
+
+    // Only a commit changes contributors or README content, so the default
+    // branch's head says whether the stored copies are current. Everything else
+    // in the module is rebuilt from data read on this run.
+    const isCurrent =
+      !forceRefresh &&
+      existing?.sourceCommit === sourceCommit &&
+      Array.isArray(existing.contributors) &&
+      existsSync(readmePath(repository.name));
+
+    if (isCurrent) {
+      target.push(buildModule(repository, repositoryDetails, existing.contributors));
+      reused.push(fullName);
       continue;
     }
 
-    const details = readRepositoryDetails(repository);
-    target.push(buildModule(repository, details, readContributors(repository)));
-    refreshed.push(`${repositoryOwner(repository)}/${repository.name}`);
+    const html = sourceCommit ? readReadme(repository, repositoryDetails.defaultBranchRef.name) : null;
+    readmes.set(repository.name, { sourceCommit, html });
+    target.push(buildModule(repository, repositoryDetails, sourceCommit ? readContributors(repository) : []));
+    refreshed.push(fullName);
   }
 
   const catalogue = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     organisation: ORGANISATION,
     catalogueUpdatedAt: checkedAt,
     methodology: {
@@ -1178,16 +1279,9 @@ if (contributorsOnly) {
     graduatedModules,
   };
 
-  assertCatalogueIsComplete(existingCatalogue, modules, graduatedModules);
-
-  if (!dryRun) {
-    mkdirSync(dirname(outputPath), { recursive: true });
-    writeFileSync(outputPath, `${JSON.stringify(catalogue, null, 2)}\n`);
-  }
-
   console.log(
-    `Mage-OS Lab catalogue: ${modules.length} Lab projects, ${graduatedModules.length} graduated projects, ${refreshed.length} refreshed, ${unchanged.length} unchanged.`
+    `Mage-OS Lab catalogue: ${modules.length} Lab projects, ${graduatedModules.length} graduated projects. Contributors and READMEs: ${refreshed.length} refreshed, ${reused.length} reused.`
   );
   if (refreshed.length) console.log(`Refreshed: ${refreshed.join(', ')}`);
-  if (dryRun) console.log('Dry run: no file written.');
+  publish(existingCatalogue, catalogue, readmes);
 }
