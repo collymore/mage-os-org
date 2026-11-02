@@ -1350,34 +1350,22 @@ const formatDate = (value: string) =>
       const requestId = ++readmeRequestId;
 
       try {
-        const response = await fetch(
-          `https://api.github.com/repos/${githubRepositoryPath(module)}/readme?ref=${encodeURIComponent(module.defaultBranch || 'main')}`,
-          {
-            headers: {
-              Accept: 'application/vnd.github.html+json',
-              'X-GitHub-Api-Version': '2022-11-28',
-            },
-          }
-        );
+        // The catalogue refresh publishes each README as a static file, so this
+        // works without calling GitHub or sharing the visitor's rate limit.
+        const response = await fetch(`/data/lab-readmes/${encodeURIComponent(module.slug)}.json`);
+        if (!response.ok && response.status !== 404) throw new Error(`README request returned ${response.status}`);
 
+        const readme = response.ok ? ((await response.json()) as { html: string | null }) : null;
         if (requestId !== readmeRequestId || activeDialogModule?.slug !== module.slug) return;
-        if (response.status === 404) {
-          readmeCache.set(module.slug, null);
-          readmePanel.removeAttribute('aria-busy');
+
+        const html = readme?.html ?? null;
+        readmeCache.set(module.slug, html);
+        readmePanel.removeAttribute('aria-busy');
+        if (html === null) {
           readmeStatus.textContent = 'No README is available for this project.';
           return;
         }
-        if (response.status === 403 || response.status === 429) {
-          readmePanel.removeAttribute('aria-busy');
-          readmeStatus.textContent =
-            'GitHub has reached its hourly limit for anonymous README requests from this network. Open the README on GitHub, or try again later.';
-          return;
-        }
-        if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
 
-        const html = await response.text();
-        readmeCache.set(module.slug, html);
-        readmePanel.removeAttribute('aria-busy');
         showReadme(html);
         scrollReadmeIntoView();
       } catch {
