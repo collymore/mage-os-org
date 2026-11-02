@@ -1403,6 +1403,10 @@ const formatDate = (value: string) =>
     });
 
     dialog.addEventListener('click', (event) => {
+      // Backdrop clicks target the dialog itself. Pressing Enter on a control inside
+      // it reports a position of 0,0, which must not count as an outside click.
+      if (event.target !== dialog) return;
+
       const bounds = dialog.getBoundingClientRect();
       const outside =
         event.clientX < bounds.left ||
