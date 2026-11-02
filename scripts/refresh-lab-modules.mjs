@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
-// Refreshes the Mage-OS Lab catalogue, the site's only source of GitHub data. The
-// pages and the README viewer read the files written here, never GitHub itself.
+// Refreshes the Mage-OS Lab catalogue that the site builds from. READMEs are not
+// stored here: the viewer on /labs loads them from GitHub when a visitor opens one.
 //
 // Every run reads repository metadata and GraphQL details for all projects, so
-// stars, releases, and signals cannot go stale. Contributors and READMEs are
-// reused until the default branch moves, because only a commit changes them.
-// All requests go through the authenticated gh CLI, and a run that finds no
-// changes writes nothing, so a scheduled run only produces a real diff.
+// stars, releases, and signals cannot go stale. Contributors are reused until
+// the default branch moves, because only a commit changes them. All requests go
+// through the authenticated gh CLI, and a run that finds no changes writes
+// nothing, so a scheduled run only produces a real diff.
 //
-//   --all                 Refetch contributors and READMEs for every project.
+//   --all                 Refetch contributors for every project.
 //   --contributors-only   Refetch contributors and leave everything else alone.
 //   --dry-run             Report what would happen without writing any files.
 //   --accept-shrink       Allow an intended drop of more than a fifth of projects.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,7 +23,6 @@ const ORGANISATION = 'mage-os-lab';
 const GRADUATED_ORGANISATION = 'mage-os';
 const rootDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = resolve(rootDirectory, 'src/data/lab-modules.json');
-const readmeDirectory = resolve(rootDirectory, 'public/data/lab-readmes');
 const forceRefresh = process.argv.includes('--all');
 const dryRun = process.argv.includes('--dry-run');
 const contributorsOnly = process.argv.includes('--contributors-only');
@@ -1001,25 +1000,6 @@ function readContributors(repository) {
   );
 }
 
-function readmePath(slug) {
-  return resolve(readmeDirectory, `${slug}.json`);
-}
-
-function readReadme(repository, branch) {
-  const path = `repos/${repositoryOwner(repository)}/${repository.name}/readme?ref=${encodeURIComponent(branch)}`;
-
-  try {
-    const html = ghRequest(['-H', 'Accept: application/vnd.github.html+json', path]);
-    if (!html.trim()) throw new Error(`GitHub returned an empty README for ${path}`);
-    return html;
-  } catch (error) {
-    // Not every repository has a README. Any other failure stops the refresh
-    // rather than replacing a published README with nothing.
-    if (/HTTP 404/.test(String(error.stderr))) return null;
-    throw error;
-  }
-}
-
 function parseJson(text) {
   try {
     return text ? JSON.parse(text) : {};
@@ -1140,31 +1120,13 @@ function withoutTimestamps(catalogue) {
   );
 }
 
-function writeReadmes(readmes, catalogue) {
-  mkdirSync(readmeDirectory, { recursive: true });
-
-  for (const [slug, readme] of readmes) {
-    writeFileSync(readmePath(slug), `${JSON.stringify(readme, null, 2)}\n`);
-  }
-
-  // A project that leaves the catalogue must not leave its README published.
-  const slugs = new Set([...catalogue.modules, ...catalogue.graduatedModules].map((module) => module.slug));
-  for (const file of readdirSync(readmeDirectory)) {
-    if (!slugs.has(file.replace(/\.json$/, ''))) rmSync(resolve(readmeDirectory, file));
-  }
-}
-
-function publish(existingCatalogue, catalogue, readmes = new Map()) {
+function publish(existingCatalogue, catalogue) {
   assertCatalogueIsComplete(existingCatalogue, catalogue.modules, catalogue.graduatedModules);
 
   if (dryRun) {
     console.log('Dry run: no file written.');
     return;
   }
-
-  // READMEs go first, so an interrupted run leaves the catalogue pointing at the
-  // old commit and the next run fetches them again.
-  writeReadmes(readmes, catalogue);
 
   if (withoutTimestamps(catalogue) === withoutTimestamps(existingCatalogue)) {
     console.log('No data changed: the catalogue was left as it was.');
@@ -1225,7 +1187,6 @@ if (contributorsOnly) {
   const details = readRepositoryDetails(allRepositories);
   const modules = [];
   const graduatedModules = [];
-  const readmes = new Map();
   const refreshed = [];
   const reused = [];
 
@@ -1236,14 +1197,10 @@ if (contributorsOnly) {
     const repositoryDetails = details.get(repository.full_name);
     const sourceCommit = repositoryDetails.defaultBranchRef?.target?.oid ?? null;
 
-    // Only a commit changes contributors or README content, so the default
-    // branch's head says whether the stored copies are current. Everything else
-    // in the module is rebuilt from data read on this run.
-    const isCurrent =
-      !forceRefresh &&
-      existing?.sourceCommit === sourceCommit &&
-      Array.isArray(existing.contributors) &&
-      existsSync(readmePath(repository.name));
+    // Only a commit changes contributors, so the default branch's head says
+    // whether the stored list is current. Everything else in the module is rebuilt
+    // from data read on this run.
+    const isCurrent = !forceRefresh && existing?.sourceCommit === sourceCommit && Array.isArray(existing.contributors);
 
     if (isCurrent) {
       target.push(buildModule(repository, repositoryDetails, existing.contributors));
@@ -1251,8 +1208,6 @@ if (contributorsOnly) {
       continue;
     }
 
-    const html = sourceCommit ? readReadme(repository, repositoryDetails.defaultBranchRef.name) : null;
-    readmes.set(repository.name, { sourceCommit, html });
     target.push(buildModule(repository, repositoryDetails, sourceCommit ? readContributors(repository) : []));
     refreshed.push(fullName);
   }
@@ -1280,8 +1235,8 @@ if (contributorsOnly) {
   };
 
   console.log(
-    `Mage-OS Lab catalogue: ${modules.length} Lab projects, ${graduatedModules.length} graduated projects. Contributors and READMEs: ${refreshed.length} refreshed, ${reused.length} reused.`
+    `Mage-OS Lab catalogue: ${modules.length} Lab projects, ${graduatedModules.length} graduated projects. Contributors: ${refreshed.length} refreshed, ${reused.length} reused.`
   );
   if (refreshed.length) console.log(`Refreshed: ${refreshed.join(', ')}`);
-  publish(existingCatalogue, catalogue, readmes);
+  publish(existingCatalogue, catalogue);
 }

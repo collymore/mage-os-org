@@ -1,8 +1,7 @@
 name: Refresh Lab Catalogue
 
 # Keeps the Lab catalogue current by opening a pull request, so the site always
-# builds from reviewed data and never calls GitHub during a build or from a
-# visitor's browser.
+# builds from reviewed data and never calls GitHub during a build.
 #
 # Setup, by a repository admin:
 #   1. Under Settings > Actions > General, enable "Allow GitHub Actions to create
@@ -48,9 +47,7 @@ jobs:
           token: ${{ secrets.LAB_CATALOGUE_TOKEN || secrets.GITHUB_TOKEN }}
           branch: automation/refresh-lab-catalogue
           delete-branch: true
-          add-paths: |
-            src/data/lab-modules.json
-            public/data/lab-readmes
+          add-paths: src/data/lab-modules.json
           commit-message: Refresh Lab catalogue
           title: Refresh Mage-OS Lab catalogue
           body: |
