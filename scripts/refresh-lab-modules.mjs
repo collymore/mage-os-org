@@ -16,6 +16,9 @@ const outputPath = resolve(rootDirectory, 'src/data/lab-modules.json');
 const forceRefresh = process.argv.includes('--all');
 const dryRun = process.argv.includes('--dry-run');
 const contributorsOnly = process.argv.includes('--contributors-only');
+const acceptShrink = process.argv.includes('--accept-shrink');
+const REQUEST_TIMEOUT_MS = 60_000;
+const SHRINK_TOLERANCE = 0.8;
 const checkedAt = new Date().toISOString();
 const recentCutoff = new Date(checkedAt);
 recentCutoff.setUTCDate(recentCutoff.getUTCDate() - 180);
@@ -802,16 +805,25 @@ const curation = {
   },
 };
 
-function ghApi(arguments_) {
+// GitHub answers 204 No Content with an empty body on some collection
+// endpoints, so a caller that expects a list passes `emptyAs: []`. Every other
+// caller treats an empty body as a failure rather than as an empty result,
+// because an empty body on a single-object endpoint means the request did not
+// return what was asked for.
+function ghApi(arguments_, { emptyAs } = {}) {
   const response = execFileSync('gh', ['api', ...arguments_], {
     cwd: rootDirectory,
     encoding: 'utf8',
     maxBuffer: 50 * 1024 * 1024,
+    timeout: REQUEST_TIMEOUT_MS,
   });
 
-  // GitHub answers 204 No Content with an empty body for repositories that have
-  // no contributors yet, so treat an empty response as an empty collection.
-  return response.trim() ? JSON.parse(response) : [];
+  if (!response.trim()) {
+    if (emptyAs !== undefined) return emptyAs;
+    throw new Error(`GitHub returned an empty body for: gh api ${arguments_.join(' ')}`);
+  }
+
+  return JSON.parse(response);
 }
 
 function readExistingCatalogue() {
@@ -822,14 +834,37 @@ function readExistingCatalogue() {
   }
 }
 
+function assertCatalogueIsComplete(existingCatalogue, modules, graduatedModules) {
+  const previous = (existingCatalogue.modules?.length ?? 0) + (existingCatalogue.graduatedModules?.length ?? 0);
+  const current = modules.length + graduatedModules.length;
+  const floor = Math.ceil(previous * SHRINK_TOLERANCE);
+
+  if (!previous || current >= floor || acceptShrink) return;
+
+  throw new Error(
+    `Refusing to write ${outputPath}: the catalogue would fall from ${previous} to ${current} projects. ` +
+      'Check GitHub access and rerun, or pass --accept-shrink when the reduction is intended.'
+  );
+}
+
 function repositoryOwner(repository) {
   return repository.owner?.login ?? repository.organisation ?? ORGANISATION;
 }
 
 function readRepositories(organisation) {
-  return ghApi([`orgs/${organisation}/repos?per_page=100&type=public&sort=full_name`, '--paginate', '--slurp'])
-    .flat()
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const repositories = ghApi([
+    `orgs/${organisation}/repos?per_page=100&type=public&sort=full_name`,
+    '--paginate',
+    '--slurp',
+  ]).flat();
+
+  // An organisation listing that comes back empty means the request failed or
+  // the token lost visibility, not that the organisation has no repositories.
+  if (!repositories.length) {
+    throw new Error(`GitHub returned no repositories for the ${organisation} organisation. Check access and rerun.`);
+  }
+
+  return repositories.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function hasGraduatedFromLab(repository, existingGraduates) {
@@ -863,11 +898,12 @@ function readRepositoryDetails(repository) {
         workflows: object(expression: "HEAD:.github/workflows") { ... on Tree { entries { name } } }
         testsUpper: object(expression: "HEAD:Test") { ... on Tree { entries { name } } }
         testsLower: object(expression: "HEAD:tests") { ... on Tree { entries { name } } }
+        testsDev: object(expression: "HEAD:dev/tests") { ... on Tree { entries { name } } }
       }
     }
   `;
 
-  return ghApi([
+  const response = ghApi([
     'graphql',
     '-f',
     `query=${query}`,
@@ -875,7 +911,22 @@ function readRepositoryDetails(repository) {
     `owner=${repositoryOwner(repository)}`,
     '-F',
     `name=${repository.name}`,
-  ]).data.repository;
+  ]);
+
+  // GraphQL can answer with both data and per-field errors at exit code zero. A
+  // timed-out readme field would otherwise be recorded as a missing readme and
+  // lower the published quality score.
+  if (response.errors?.length) {
+    const messages = response.errors.map((entry) => entry.message).join('; ');
+    throw new Error(`GitHub GraphQL errors for ${repository.full_name}: ${messages}`);
+  }
+
+  const details = response.data?.repository;
+  if (!details) {
+    throw new Error(`GitHub GraphQL returned no repository for ${repository.full_name}.`);
+  }
+
+  return details;
 }
 
 function normaliseContributors(entries) {
@@ -894,7 +945,9 @@ function normaliseContributors(entries) {
 
 function readContributors(repository) {
   return normaliseContributors(
-    ghApi([`repos/${repositoryOwner(repository)}/${repository.name}/contributors?per_page=100&anon=0`])
+    ghApi([`repos/${repositoryOwner(repository)}/${repository.name}/contributors?per_page=100&anon=0`], {
+      emptyAs: [],
+    })
   );
 }
 
@@ -958,8 +1011,16 @@ function buildModule(repository, details, contributors) {
   const isInstallable =
     install !== 'Not installable yet' &&
     (Boolean(composerName || npmName || curated.install) || Boolean(latestRelease));
+  // A test framework in require-dev only shows intent, so the signal looks for a
+  // test directory or a declared test command. Magento modules commonly keep
+  // tests under dev/tests rather than at the repository root.
   const hasTests = Boolean(
-    details.testsUpper || details.testsLower || packageJson.scripts?.test || /## Testing\b/i.test(readme)
+    details.testsUpper ||
+    details.testsLower ||
+    details.testsDev ||
+    packageJson.scripts?.test ||
+    composer.scripts?.test ||
+    /## Testing\b/i.test(readme)
   );
   const hasAutomation = (details.workflows?.entries?.length ?? 0) > 0;
   const isRecentlyMaintained = new Date(repository.pushed_at) >= recentCutoff;
@@ -1043,6 +1104,8 @@ if (contributorsOnly) {
     graduatedModules,
   };
 
+  assertCatalogueIsComplete(existingCatalogue, modules, graduatedModules);
+
   if (!dryRun) writeFileSync(outputPath, `${JSON.stringify(catalogue, null, 2)}\n`);
   console.log(
     `Mage-OS Lab catalogue: contributor data refreshed for ${modules.length} Lab and ${graduatedModules.length} graduated projects.`
@@ -1109,6 +1172,8 @@ if (contributorsOnly) {
     modules,
     graduatedModules,
   };
+
+  assertCatalogueIsComplete(existingCatalogue, modules, graduatedModules);
 
   if (!dryRun) {
     mkdirSync(dirname(outputPath), { recursive: true });

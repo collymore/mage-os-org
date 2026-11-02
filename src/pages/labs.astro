@@ -715,6 +715,38 @@ const formatDate = (value: string) =>
   const githubRepositoryPath = (module: LabModule) =>
     new URL(module.url).pathname.split('/').filter(Boolean).map(encodeURIComponent).join('/');
 
+  const resolveReadmeUrl = (value: string, base: string, rootBase: string) => {
+    // GitHub reads a leading slash as the repository root, so resolving it
+    // against the host alone would drop the repository and branch segments.
+    const [target, relativeTo] = value.startsWith('/') ? [value.slice(1), rootBase] : [value, base];
+
+    try {
+      const url = new URL(target, relativeTo);
+      return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const rewriteSrcset = (element: HTMLElement, base: string, rootBase: string) => {
+    const srcset = element.getAttribute('srcset');
+    if (!srcset) return;
+
+    const candidates = srcset
+      .split(',')
+      .map((candidate) => candidate.trim())
+      .filter(Boolean)
+      .map((candidate) => {
+        const [value, ...descriptors] = candidate.split(/\s+/);
+        const resolved = resolveReadmeUrl(value, base, rootBase);
+        return resolved ? [resolved, ...descriptors].join(' ') : null;
+      })
+      .filter((candidate): candidate is string => candidate !== null);
+
+    if (candidates.length) element.setAttribute('srcset', candidates.join(', '));
+    else element.removeAttribute('srcset');
+  };
+
   const sanitizeReadmeHtml = (html: string, module: LabModule) => {
     const document = new DOMParser().parseFromString(html, 'text/html');
     document
@@ -729,7 +761,8 @@ const formatDate = (value: string) =>
       .split('/')
       .map((part) => encodeURIComponent(part))
       .join('/');
-    const linkBase = `${module.url}/blob/${branchPath}/README.md`;
+    const linkRootBase = `${module.url}/blob/${branchPath}/`;
+    const linkBase = `${linkRootBase}README.md`;
     const imageBase = `https://raw.githubusercontent.com/${repositoryPath}/${branchPath}/`;
 
     for (const element of document.querySelectorAll<HTMLElement>('*')) {
@@ -745,13 +778,9 @@ const formatDate = (value: string) =>
           element.removeAttribute('target');
           element.removeAttribute('rel');
         } else if (href) {
-          try {
-            const url = new URL(href, linkBase);
-            if (!['http:', 'https:'].includes(url.protocol)) element.removeAttribute('href');
-            else element.href = url.href;
-          } catch {
-            element.removeAttribute('href');
-          }
+          const resolved = resolveReadmeUrl(href, linkBase, linkRootBase);
+          if (resolved) element.href = resolved;
+          else element.removeAttribute('href');
           element.target = '_blank';
           element.rel = 'noopener noreferrer';
         }
@@ -760,15 +789,24 @@ const formatDate = (value: string) =>
       if (element instanceof HTMLImageElement) {
         const src = element.getAttribute('src');
         if (src) {
-          try {
-            const url = new URL(src, imageBase);
-            if (!['http:', 'https:'].includes(url.protocol)) element.removeAttribute('src');
-            else element.src = url.href;
-          } catch {
-            element.removeAttribute('src');
-          }
+          const resolved = resolveReadmeUrl(src, imageBase, imageBase);
+          if (resolved) element.src = resolved;
+          else element.removeAttribute('src');
         }
+        rewriteSrcset(element, imageBase, imageBase);
         element.loading = 'lazy';
+      }
+
+      // GitHub readmes use <picture><source srcset> for light and dark variants,
+      // so the candidate list needs the same rewriting the img src receives.
+      if (element instanceof HTMLSourceElement) {
+        const src = element.getAttribute('src');
+        if (src) {
+          const resolved = resolveReadmeUrl(src, imageBase, imageBase);
+          if (resolved) element.setAttribute('src', resolved);
+          else element.removeAttribute('src');
+        }
+        rewriteSrcset(element, imageBase, imageBase);
       }
     }
 
@@ -1327,6 +1365,12 @@ const formatDate = (value: string) =>
           readmeCache.set(module.slug, null);
           readmePanel.removeAttribute('aria-busy');
           readmeStatus.textContent = 'No README is available for this project.';
+          return;
+        }
+        if (response.status === 403 || response.status === 429) {
+          readmePanel.removeAttribute('aria-busy');
+          readmeStatus.textContent =
+            'GitHub has reached its hourly limit for anonymous README requests from this network. Open the README on GitHub, or try again later.';
           return;
         }
         if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
