@@ -4,6 +4,7 @@ import StructuredData from '~/components/common/StructuredData.astro';
 
 import Hero from '~/components/widgets/Hero.astro';
 import Note from '~/components/widgets/Note.astro';
+import InPageDonationAd from '~/components/widgets/InPageDonationAd.astro';
 import Features from '~/components/widgets/Features.astro';
 import Features2 from '~/components/widgets/Features2.astro';
 import Content from '~/components/widgets/Content.astro';
@@ -19,6 +20,7 @@ import heroDark from '~/assets/images/hero/CubicScene-Black.webp';
 import adminDashboard from '~/assets/images/blog/2025/dashboard-mage-os-admin-1024x581.png';
 
 const stats = await getCommunityStats();
+const donationCampaignEnabled = process.env.DONATION_CAMPAIGN_ENABLED === 'true';
 
 const metadata = {
   title: 'Mage-OS | Community-Driven Open Source Commerce Platform',
@@ -93,6 +95,15 @@ const metadata = {
     title="100% Community-Owned"
     description="Built by merchants, developers, and agencies worldwide. No shareholders, no investors—just the community."
   />
+
+  {
+    donationCampaignEnabled && (
+      <InPageDonationAd
+        id="homepage-membership-ad"
+        dismissalKey="mage-os:donation-ad:dismissed:homepage-membership-v1"
+      />
+    )
+  }
 
   <!-- Latest News Widget ******* -->
 

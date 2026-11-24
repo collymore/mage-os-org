@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import DonationBanner from '~/components/widgets/DonationBanner.astro';
+import InPageDonationAd from '~/components/widgets/InPageDonationAd.astro';
 import PageLayout from '~/layouts/PageLayout.astro';
 
 const membershipUrl = 'https://opencollective.com/mage-os/contribute/community-member-44722/checkout';
@@ -15,7 +16,7 @@ const metadata = {
 };
 ---
 
-<PageLayout metadata={metadata} showDonationBanner={false}>
+<PageLayout metadata={metadata}>
   <section class="bg-slate-50 py-14 dark:bg-slate-950 sm:py-16">
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <p class="text-sm font-bold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
@@ -143,6 +144,7 @@ const metadata = {
       <aside
         class="relative overflow-hidden border-y border-orange-500/40 bg-[#0b1426] text-white"
         aria-labelledby="full-page-cta-title"
+        data-donation-ad-variant="full_cta"
       >
         <div
           class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(123,45,45,0.28),transparent_38%)]"
@@ -217,6 +219,7 @@ const metadata = {
           <div class="flex flex-col gap-3">
             <a
               href={membershipUrl}
+              data-donation-ad-action="join"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-orange-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#0b1426]"
@@ -226,6 +229,7 @@ const metadata = {
             </a>
             <a
               href="/community"
+              data-donation-ad-action="explore_impact"
               class="inline-flex items-center justify-center rounded-lg border border-slate-600 bg-[#172236] px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#0b1426]"
             >
               Explore the impact
@@ -258,39 +262,7 @@ const metadata = {
     </div>
   </section>
 
-  <aside
-    id="in-page-option"
-    class="scroll-mt-24 border-y border-orange-300 bg-orange-50 py-10 dark:border-orange-500/30 dark:bg-slate-900"
-    aria-labelledby="in-page-option-title"
-  >
-    <div
-      class="mx-auto flex max-w-6xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8"
-    >
-      <div class="max-w-3xl">
-        <p class="text-xs font-bold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
-          Support Mage-OS
-        </p>
-        <h2
-          id="in-page-option-title"
-          class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white"
-        >
-          Built by the community. Backed by you.
-        </h2>
-        <p class="mt-3 text-base leading-7 text-slate-700 dark:text-slate-300">
-          Membership funds features, grants, docs, and events—and gives you a vote.
-        </p>
-      </div>
-      <a
-        href={membershipUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-orange-600 px-6 py-3 font-bold text-white shadow-sm transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 dark:bg-orange-500 dark:text-slate-950 dark:hover:bg-orange-400 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900 lg:self-auto"
-      >
-        Join from €10/year
-        <Icon name="tabler:arrow-up-right" class="h-4 w-4" aria-hidden="true" />
-      </a>
-    </div>
-  </aside>
+  <InPageDonationAd id="in-page-option" />
 
   <section class="py-14 sm:py-16">
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -307,6 +279,7 @@ const metadata = {
     id="support-modal-option"
     class="m-0 h-screen max-h-none w-screen max-w-none bg-transparent p-0 backdrop:bg-slate-950/85"
     aria-labelledby="support-modal-title"
+    data-donation-ad-variant="modal"
   >
     <div
       class="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-5 py-12 text-white sm:px-8"
@@ -337,6 +310,7 @@ const metadata = {
         <div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
             href={membershipUrl}
+            data-donation-ad-action="join"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-7 py-3.5 font-bold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-slate-950"
@@ -362,6 +336,7 @@ const metadata = {
     aria-labelledby="support-drawer-title"
     aria-hidden="true"
     data-support-drawer
+    data-donation-ad-variant="slide_in"
     data-open="false"
   >
     <button
@@ -382,6 +357,7 @@ const metadata = {
     <p class="mt-3 leading-7 text-slate-600 dark:text-slate-300">Join from €10/year. Get a vote. Fund the work.</p>
     <a
       href={membershipUrl}
+      data-donation-ad-action="join"
       target="_blank"
       rel="noopener noreferrer"
       class="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-5 py-3 font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 dark:bg-orange-500 dark:text-slate-950 dark:hover:bg-orange-400 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"

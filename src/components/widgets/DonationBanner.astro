@@ -8,6 +8,7 @@ const communityMembershipUrl = 'https://opencollective.com/mage-os/contribute/co
   class="relative overflow-hidden border-b border-amber-300 bg-amber-50 text-slate-950 dark:border-amber-500/30 dark:bg-slate-900 dark:text-white"
   aria-labelledby="donation-banner-title"
   data-donation-banner
+  data-donation-ad-variant="minimal"
 >
   <div
     class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.20),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_42%)]"
@@ -44,6 +45,7 @@ const communityMembershipUrl = 'https://opencollective.com/mage-os/contribute/co
       <div class="flex items-center">
         <a
           href={communityMembershipUrl}
+          data-donation-ad-action="join"
           target="_blank"
           rel="noopener noreferrer"
           class="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-amber-50 dark:bg-orange-500 dark:text-slate-950 dark:hover:bg-orange-400 dark:focus:ring-orange-400 dark:focus:ring-offset-slate-900"

@@ -3,7 +3,7 @@ import Layout from '~/layouts/Layout.astro';
 import Header from '~/components/widgets/Header.astro';
 import Footer from '~/components/widgets/Footer.astro';
 import Announcement from '~/components/widgets/Announcement.astro';
-import DonationBanner from '~/components/widgets/DonationBanner.astro';
+import DonationTracking from '~/components/common/DonationTracking.astro';
 import PartnersMarquee from '~/components/widgets/PartnersMarquee.astro';
 import { trimSlash } from '~/utils/permalinks';
 
@@ -15,10 +15,9 @@ export interface Props {
   metadata?: MetaData;
   editFile?: string;
   rssFeed?: { href: string; title: string };
-  showDonationBanner?: boolean;
 }
 
-const { metadata, editFile, rssFeed, showDonationBanner = true } = Astro.props;
+const { metadata, editFile, rssFeed } = Astro.props;
 
 // Construct GitHub edit URL
 const GITHUB_REPO = 'https://github.com/mage-os/mage-os-org/tree/main';
@@ -64,8 +63,8 @@ const editUrl = getEditUrl();
 ---
 
 <Layout metadata={metadata} rssFeed={rssFeed}>
+  <DonationTracking />
   <slot name="top" />
-  {showDonationBanner && <DonationBanner />}
   <slot name="announcement">
     <Announcement />
   </slot>
