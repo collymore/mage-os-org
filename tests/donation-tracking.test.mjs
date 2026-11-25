@@ -9,10 +9,14 @@ const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function harness({ consent = true, debug = false } = {}) {
+function harness({ consent = true, debug = false, random = 0.25, search = '' } = {}) {
   const listeners = new Map();
   const events = [];
   const storage = new Map();
+  const session = new Map();
+  const timers = new Map();
+  let timerId = 0;
+  let now = 100_000;
   const observers = [];
   const dismissalKey = 'homepage-membership';
 
@@ -34,8 +38,14 @@ function harness({ consent = true, debug = false } = {}) {
   }
 
   const window = {
-    location: { pathname: '/support-options' },
+    location: { pathname: '/support-options', search },
     localStorage: { getItem: storage.get.bind(storage), setItem: storage.set.bind(storage) },
+    sessionStorage: { getItem: session.get.bind(session), setItem: session.set.bind(session) },
+    setTimeout(callback, delay) {
+      timers.set(++timerId, { callback, at: now + delay });
+      return timerId;
+    },
+    clearTimeout: timers.delete.bind(timers),
     IntersectionObserver,
     getCkyConsent: () => ({ categories: { analytics: consent } }),
     gtag(command, event, params) {
@@ -46,6 +56,7 @@ function harness({ consent = true, debug = false } = {}) {
   };
   const document = {
     querySelector: () => document.campaignAd,
+    getElementById: () => null,
     addEventListener(type, listener) {
       const existing = listeners.get(type) || [];
       listeners.set(type, [...existing, listener]);
@@ -77,18 +88,22 @@ function harness({ consent = true, debug = false } = {}) {
     HTMLAnchorElement,
     IntersectionObserver,
     queueMicrotask,
+    URLSearchParams,
+    Date: { now: () => now },
+    Math: { random: () => random, max: Math.max },
   });
   exports.setupDonationTracking(debug);
 
   function dispatch(target, type = 'click', button = 0) {
     for (const listener of listeners.get(type) || []) listener({ target, type, button });
   }
-  function enterHomepage() {
-    window.location.pathname = '/';
+  function visitCampaignPage(path = '/') {
+    window.location.pathname = path;
+    if (document.campaignAd) document.campaignAd.isConnected = false;
     const ad = {
-      dataset: { donationAdVariant: 'in_page', donationAdDismissalKey: dismissalKey },
+      dataset: { donationAdVariant: 'top_overlay', donationAdDismissalKey: dismissalKey, donationAdPending: '' },
       isConnected: true,
-      hidden: false,
+      inert: false,
       querySelector: () => dismissButton,
     };
     const dismissButton = {
@@ -99,10 +114,37 @@ function harness({ consent = true, debug = false } = {}) {
     };
     document.campaignAd = ad;
     dispatch(null, 'astro:after-swap');
-    return { ad, dismissButton, observer: observers.at(-1) };
+    return {
+      ad,
+      dismissButton,
+      get observer() {
+        return observers.find((entry) => entry.ad === ad);
+      },
+    };
   }
 
-  return { exports, window, document, listeners, Element, HTMLAnchorElement, dispatch, enterHomepage, events };
+  function advance(delay) {
+    now += delay;
+    for (const [id, { callback, at }] of timers) {
+      if (at <= now) {
+        timers.delete(id);
+        callback();
+      }
+    }
+  }
+
+  return {
+    exports,
+    window,
+    document,
+    listeners,
+    Element,
+    HTMLAnchorElement,
+    dispatch,
+    visitCampaignPage,
+    events,
+    advance,
+  };
 }
 
 test('all five variants emit the stable event payload', () => {
@@ -186,44 +228,78 @@ test('every donation CTA in the templates has an action and variant', () => {
     assert.ok(page.includes(`data-donation-ad-variant="${variant}"`));
   }
   assert.ok(banner.includes('data-donation-ad-variant="minimal"'));
-  assert.ok(inPage.includes('data-donation-ad-variant="in_page"'));
+  assert.ok(inPage.includes("data-donation-ad-variant={dismissalKey ? 'top_overlay' : 'in_page'}"));
   assert.ok(inPage.includes('data-donation-ad-action="join"'));
 });
 
 test('homepage impression fires once when half the ad enters the viewport', () => {
   const h = harness();
-  const { observer } = h.enterHomepage();
+  const { observer } = h.visitCampaignPage();
   assert.equal(observer.threshold, 0.5);
   observer.report(0.4);
-  assert.equal(h.events.length, 0);
+  assert.equal(h.events.length, 1);
   observer.report(0.5);
   observer.report(0.9);
   assert.deepEqual(h.events, [
-    { event: 'donation_ad_impression', ad_variant: 'in_page', page_path: '/', send_to: 'G-SHPYWZSV00' },
+    {
+      event: 'donation_ad_assigned',
+      ad_variant: 'top_overlay',
+      page_path: '/',
+      send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
+    },
+    {
+      event: 'donation_ad_impression',
+      ad_variant: 'top_overlay',
+      page_path: '/',
+      send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
+    },
   ]);
 });
 
-test('homepage dismissal fires once and a return visit restores it without another event', () => {
+test('Community ad impression and dismissal identify the page, and dismissal carries to the homepage', () => {
   const h = harness();
-  const { ad, dismissButton, observer } = h.enterHomepage();
+  const { ad, dismissButton, observer } = h.visitCampaignPage('/community');
   assert.equal(dismissButton.hidden, false);
+  observer.report(0.9);
   dismissButton.click();
   dismissButton.click();
   observer.report(0.9);
-  assert.equal(ad.hidden, true);
-  const returnVisit = h.enterHomepage();
-  assert.equal(returnVisit.ad.hidden, true);
+  assert.equal(ad.inert, true);
+  const returnVisit = h.visitCampaignPage('/');
+  assert.equal(returnVisit.ad.inert, true);
   assert.equal(returnVisit.dismissButton.hidden, true);
   assert.deepEqual(h.events, [
-    { event: 'donation_ad_dismiss', ad_variant: 'in_page', page_path: '/', send_to: 'G-SHPYWZSV00' },
+    {
+      event: 'donation_ad_assigned',
+      ad_variant: 'top_overlay',
+      page_path: '/community',
+      send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
+    },
+    {
+      event: 'donation_ad_impression',
+      ad_variant: 'top_overlay',
+      page_path: '/community',
+      send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
+    },
+    {
+      event: 'donation_ad_dismiss',
+      ad_variant: 'top_overlay',
+      page_path: '/community',
+      send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
+    },
   ]);
 });
 
 test('consent gates all sends and a visible impression can fire after opt-in', async () => {
   const h = harness({ consent: false, debug: true });
-  const { observer } = h.enterHomepage();
+  const { observer } = h.visitCampaignPage();
   observer.report(0.75);
-  h.dispatch(new h.HTMLAnchorElement('in_page'));
+  h.dispatch(new h.HTMLAnchorElement('top_overlay'));
   assert.equal(h.events.length, 0);
 
   h.window.getCkyConsent = () => ({ categories: { analytics: true } });
@@ -231,15 +307,72 @@ test('consent gates all sends and a visible impression can fire after opt-in', a
   await Promise.resolve();
   assert.deepEqual(h.events, [
     {
-      event: 'donation_ad_impression',
-      ad_variant: 'in_page',
+      event: 'donation_ad_assigned',
+      ad_variant: 'top_overlay',
       page_path: '/',
       send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
+      debug_mode: true,
+    },
+    {
+      event: 'donation_ad_impression',
+      ad_variant: 'top_overlay',
+      page_path: '/',
+      send_to: 'G-SHPYWZSV00',
+      ad_timing: 'immediate',
       debug_mode: true,
     },
   ]);
 
   h.window.getCkyConsent = () => ({ categories: { analytics: false } });
-  h.enterHomepage().dismissButton.click();
-  assert.equal(h.events.length, 1);
+  h.visitCampaignPage().dismissButton.click();
+  assert.equal(h.events.length, 2);
+});
+
+test('delayed group keeps the original timer through page navigation and tags the click', () => {
+  const h = harness({ random: 0.5 });
+  const home = h.visitCampaignPage();
+  assert.equal(home.ad.dataset.donationAdPending, '');
+  assert.equal(home.dismissButton.hidden, true);
+  assert.equal(home.observer, undefined);
+  h.advance(6_000);
+  const community = h.visitCampaignPage('/community');
+  h.advance(3_999);
+  assert.equal(community.observer, undefined);
+  const link = new h.HTMLAnchorElement('top_overlay');
+  link.ad = community.ad;
+  h.dispatch(link);
+  assert.deepEqual(
+    h.events.map(({ event }) => event),
+    ['donation_ad_assigned']
+  );
+
+  h.advance(1);
+  assert.equal(home.ad.dataset.donationAdReveal, undefined);
+  assert.equal(community.ad.dataset.donationAdPending, undefined);
+  assert.equal(community.ad.dataset.donationAdReveal, 'slide');
+  community.observer.report(0.75);
+  h.dispatch(link);
+  assert.deepEqual(
+    h.events.map(({ event, ad_timing, page_path }) => [event, ad_timing, page_path]),
+    [
+      ['donation_ad_assigned', 'delay_10s', '/'],
+      ['donation_ad_impression', 'delay_10s', '/community'],
+      ['donation_ad_click', 'delay_10s', '/community'],
+    ]
+  );
+  const about = h.visitCampaignPage('/about');
+  assert.equal(about.ad.dataset.donationAdTiming, 'delay_10s');
+  assert.equal(about.ad.dataset.donationAdReveal, undefined);
+  assert.ok(about.observer);
+});
+
+test('local previews can force a variant without reporting an assignment', () => {
+  const h = harness({ debug: true, search: '?campaign_timing=delay_10s' });
+  const home = h.visitCampaignPage();
+  assert.equal(home.ad.dataset.donationAdTiming, 'delay_10s');
+  assert.equal(home.observer, undefined);
+  h.advance(10_000);
+  assert.ok(home.observer);
+  assert.equal(h.events.length, 0);
 });
