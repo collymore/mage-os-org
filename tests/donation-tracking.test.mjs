@@ -217,19 +217,30 @@ test('unavailable consent or a failing Google tag never breaks the page', () => 
   assert.doesNotThrow(() => h.dispatch(new h.HTMLAnchorElement('minimal')));
 });
 
-test('every donation CTA in the templates has an action and variant', () => {
-  const page = readFileSync(new URL('../src/pages/support-options.astro', import.meta.url), 'utf8');
-  const banner = readFileSync(new URL('../src/components/widgets/DonationBanner.astro', import.meta.url), 'utf8');
+test('the site-wide donation CTA identifies the overlay and membership action', () => {
+  const layout = readFileSync(new URL('../src/layouts/Layout.astro', import.meta.url), 'utf8');
   const inPage = readFileSync(new URL('../src/components/widgets/InPageDonationAd.astro', import.meta.url), 'utf8');
-  assert.equal((page.match(/data-donation-ad-action="join"/g) || []).length, 3);
-  assert.equal((page.match(/data-donation-ad-action="explore_impact"/g) || []).length, 1);
-  assert.equal((banner.match(/data-donation-ad-action="join"/g) || []).length, 1);
-  for (const variant of ['full_cta', 'modal', 'slide_in']) {
-    assert.ok(page.includes(`data-donation-ad-variant="${variant}"`));
-  }
-  assert.ok(banner.includes('data-donation-ad-variant="minimal"'));
+  assert.ok(
+    layout.includes('<InPageDonationAd id="membership-campaign-ad" dismissalKey={donationCampaignDismissalKey}')
+  );
   assert.ok(inPage.includes("data-donation-ad-variant={dismissalKey ? 'top_overlay' : 'in_page'}"));
   assert.ok(inPage.includes('data-donation-ad-action="join"'));
+});
+
+test('the donation campaign is enabled by default and supports an explicit opt-out', () => {
+  const config = readFileSync(new URL('../src/utils/donationCampaign.ts', import.meta.url), 'utf8');
+  const compiledConfig = ts.transpileModule(config, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  for (const [env, enabled] of [
+    [{}, true],
+    [{ DONATION_CAMPAIGN_ENABLED: 'true' }, true],
+    [{ DONATION_CAMPAIGN_ENABLED: 'false' }, false],
+  ]) {
+    const exports = {};
+    vm.runInNewContext(compiledConfig, { exports, process: { env } });
+    assert.equal(exports.donationCampaignEnabled, enabled);
+  }
 });
 
 test('homepage impression fires once when half the ad enters the viewport', () => {
